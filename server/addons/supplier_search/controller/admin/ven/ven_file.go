@@ -15,7 +15,7 @@ var ControllerVen = new(cVen)
 
 type cVen struct{}
 
-func (c *cVen) List(ctx context.Context, req *ven.ListReq) (res *ven.ListRes, err error) {
+func (c *cVen) List(ctx context.Context, req *ven.FileListReq) (res *ven.FileListRes, err error) {
 	glog.Info(ctx, "收到请求，获取上传的文件列表，参数：", req)
 
 	list, err := service.VenFileService.List(ctx, req.VenFileListInp)
@@ -29,7 +29,7 @@ func (c *cVen) List(ctx context.Context, req *ven.ListReq) (res *ven.ListRes, er
 	}
 
 	// 获取 VenFileListModel 对象的指针，并将其赋值给一个 ListRes 类型的变量
-	listRes := ven.ListRes(&model)
+	listRes := ven.FileListRes(&model)
 
 	return &listRes, nil
 }
@@ -63,12 +63,10 @@ func (c *cVen) Upload(ctx context.Context, _ *ven.UploadReq) (res *ven.UploadRes
 	}
 
 	// 保存文件信息到数据库
-	venFile, err := service.VenFileService.UploadFile(ctx, fileName, attr)
+	res, err = service.VenFileService.UploadFile(ctx, fileName, attr)
 	if err != nil {
 		glog.Error(ctx, "文件信息保存失败", err)
 		return nil, gerror.New("文件信息保存失败")
 	}
-	return &ven.UploadRes{
-		Id: venFile.Id,
-	}, nil
+	return
 }

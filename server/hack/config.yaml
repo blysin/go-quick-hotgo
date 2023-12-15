@@ -37,7 +37,7 @@ gfcli:
           varchar:
             type: string
           int:
-            type: uint
+            type: int64
 
 
 #    service: # 生成业务配置

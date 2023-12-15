@@ -38,8 +38,8 @@ var vendorColumns = VendorColumns{
 	AllColumn:      "all_column",
 	RequiredColumn: "required_column",
 	IsDeleted:      "is_deleted",
-	CreatedAt:      "create_time",
-	UpdatedAt:      "update_time",
+	CreatedAt:      "created_at",
+	UpdatedAt:      "updated_at",
 	CreateBy:       "create_by",
 	UpdateBy:       "update_by",
 }

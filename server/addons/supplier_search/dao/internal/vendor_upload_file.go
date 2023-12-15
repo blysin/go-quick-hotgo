@@ -44,8 +44,8 @@ var vendorUploadFileColumns = VendorUploadFileColumns{
 	ValidNum:            "valid_num",
 	ExceptionNum:        "exception_num",
 	AllColumn:           "all_column",
-	CreatedAt:           "create_time",
-	UpdatedAt:           "update_time",
+	CreatedAt:           "created_at",
+	UpdatedAt:           "updated_at",
 	CreateBy:            "create_by",
 	UpdateBy:            "update_by",
 }

@@ -56,8 +56,8 @@ var vendorDetailColumns = VendorDetailColumns{
 	ExchangeRate:     "exchange_rate",
 	ExchangeRateTime: "exchange_rate_time",
 	VendorData:       "vendor_data",
-	CreatedAt:        "create_time",
-	UpdatedAt:        "update_time",
+	CreatedAt:        "created_at",
+	UpdatedAt:        "updated_at",
 	CreateBy:         "create_by",
 	UpdateBy:         "update_by",
 }

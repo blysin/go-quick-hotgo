@@ -14,3 +14,12 @@ type VenFileListInp struct {
 type VenFileListModel struct {
 	List []*entity.VendorUploadFile `json:"list"`
 }
+
+type PresetColumn struct {
+	BrandName   string `json:"brandName"`
+	BarCode     string `json:"barCode"`
+	EnName      string `json:"enName"`
+	SupplyPrice string `json:"supplyPrice"`
+	SalePrice   string `json:"salePrice"`
+	VendorName  string `json:"vendorName"`
+}
