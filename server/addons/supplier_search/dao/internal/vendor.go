@@ -25,8 +25,8 @@ type VendorColumns struct {
 	AllColumn      string // 完整字段，多个用英文逗号隔开
 	RequiredColumn string // 隐藏字段，多个用英文逗号隔开
 	IsDeleted      string // 是否删除，0：未删除，1：已删除
-	CreateTime     string // 创建时间
-	UpdateTime     string // 更新时间
+	CreatedAt      string // 创建时间
+	UpdatedAt      string // 更新时间
 	CreateBy       string // 创建人
 	UpdateBy       string // 更新人
 }
@@ -38,8 +38,8 @@ var vendorColumns = VendorColumns{
 	AllColumn:      "all_column",
 	RequiredColumn: "required_column",
 	IsDeleted:      "is_deleted",
-	CreateTime:     "create_time",
-	UpdateTime:     "update_time",
+	CreatedAt:      "create_time",
+	UpdatedAt:      "update_time",
 	CreateBy:       "create_by",
 	UpdateBy:       "update_by",
 }

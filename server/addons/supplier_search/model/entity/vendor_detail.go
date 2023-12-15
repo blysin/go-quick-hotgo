@@ -10,8 +10,8 @@ import (
 
 // VendorDetail is the golang structure for table vendor_detail.
 type VendorDetail struct {
-	Id               uint        `json:"id"               description:"自增ID"`
-	VendorId         uint        `json:"vendorId"         description:"供应商主表id"`
+	Id               int64       `json:"id"               description:"自增ID"`
+	VendorId         int64       `json:"vendorId"         description:"供应商主表id"`
 	Brand            string      `json:"brand"            description:"品牌"`
 	Barcode          string      `json:"barcode"          description:"条码"`
 	EnglishName      string      `json:"englishName"      description:"英文名称"`
@@ -24,8 +24,8 @@ type VendorDetail struct {
 	ExchangeRate     float64     `json:"exchangeRate"     description:"汇率"`
 	ExchangeRateTime *gtime.Time `json:"exchangeRateTime" description:"汇率时间"`
 	VendorData       string      `json:"vendorData"       description:"工资内容,json格式存储"`
-	CreateTime       *gtime.Time `json:"createTime"       description:"创建时间"`
-	UpdateTime       *gtime.Time `json:"updateTime"       description:"更新时间"`
-	CreateBy         string      `json:"createBy"         description:"创建人"`
-	UpdateBy         string      `json:"updateBy"         description:"更新人"`
+	CreatedAt        *gtime.Time `json:"createdAt"       description:"创建时间"`
+	UpdatedAt        *gtime.Time `json:"updatedAt"       description:"更新时间"`
+	CreateBy         int64       `json:"createBy"         description:"创建人"`
+	UpdateBy         int64       `json:"updateBy"         description:"更新人"`
 }

@@ -34,8 +34,8 @@ type VendorDetailColumns struct {
 	ExchangeRate     string // 汇率
 	ExchangeRateTime string // 汇率时间
 	VendorData       string // 工资内容,json格式存储
-	CreateTime       string // 创建时间
-	UpdateTime       string // 更新时间
+	CreatedAt        string // 创建时间
+	UpdatedAt        string // 更新时间
 	CreateBy         string // 创建人
 	UpdateBy         string // 更新人
 }
@@ -56,8 +56,8 @@ var vendorDetailColumns = VendorDetailColumns{
 	ExchangeRate:     "exchange_rate",
 	ExchangeRateTime: "exchange_rate_time",
 	VendorData:       "vendor_data",
-	CreateTime:       "create_time",
-	UpdateTime:       "update_time",
+	CreatedAt:        "create_time",
+	UpdatedAt:        "update_time",
 	CreateBy:         "create_by",
 	UpdateBy:         "update_by",
 }

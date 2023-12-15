@@ -9,6 +9,7 @@ import (
 	"context"
 	"github.com/gogf/gf/v2/net/ghttp"
 	"hotgo/addons/supplier_search/controller/admin/sys"
+	"hotgo/addons/supplier_search/controller/admin/ven"
 	"hotgo/addons/supplier_search/global"
 	"hotgo/addons/supplier_search/router/genrouter"
 	"hotgo/internal/consts"
@@ -26,6 +27,7 @@ func Admin(ctx context.Context, group *ghttp.RouterGroup) {
 		group.Middleware(service.Middleware().AdminAuth)
 		group.Bind(
 			sys.Config,
+			ven.ControllerVen,
 		)
 	})
 

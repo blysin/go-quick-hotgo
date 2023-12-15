@@ -20,8 +20,8 @@ type VendorUploadFile struct {
 	ValidNum            interface{} // 正常数据条数
 	ExceptionNum        interface{} // 异常数据条数
 	AllColumn           interface{} // 完整字段，多个用英文逗号隔开
-	CreateTime          *gtime.Time // 创建时间
-	UpdateTime          *gtime.Time // 更新时间
+	CreatedAt           *gtime.Time // 创建时间
+	UpdatedAt           *gtime.Time // 更新时间
 	CreateBy            interface{} // 创建人
 	UpdateBy            interface{} // 更新人
 }

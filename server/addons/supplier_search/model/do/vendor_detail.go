@@ -26,8 +26,8 @@ type VendorDetail struct {
 	ExchangeRate     interface{} // 汇率
 	ExchangeRateTime *gtime.Time // 汇率时间
 	VendorData       interface{} // 工资内容,json格式存储
-	CreateTime       *gtime.Time // 创建时间
-	UpdateTime       *gtime.Time // 更新时间
+	CreatedAt        *gtime.Time // 创建时间
+	UpdatedAt        *gtime.Time // 更新时间
 	CreateBy         interface{} // 创建人
 	UpdateBy         interface{} // 更新人
 }

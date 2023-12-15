@@ -28,8 +28,8 @@ type VendorUploadFileColumns struct {
 	ValidNum            string // 正常数据条数
 	ExceptionNum        string // 异常数据条数
 	AllColumn           string // 完整字段，多个用英文逗号隔开
-	CreateTime          string // 创建时间
-	UpdateTime          string // 更新时间
+	CreatedAt           string // 创建时间
+	UpdatedAt           string // 更新时间
 	CreateBy            string // 创建人
 	UpdateBy            string // 更新人
 }
@@ -44,8 +44,8 @@ var vendorUploadFileColumns = VendorUploadFileColumns{
 	ValidNum:            "valid_num",
 	ExceptionNum:        "exception_num",
 	AllColumn:           "all_column",
-	CreateTime:          "create_time",
-	UpdateTime:          "update_time",
+	CreatedAt:           "create_time",
+	UpdatedAt:           "update_time",
 	CreateBy:            "create_by",
 	UpdateBy:            "update_by",
 }
