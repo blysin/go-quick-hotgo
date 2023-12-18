@@ -225,6 +225,14 @@ func write(ctx context.Context, meta *FileMeta, fullPath string) (models *entity
 	return
 }
 
+func GetById(ctx context.Context, id int64) (res *entity.SysAttachment, err error) {
+	if err = GetModel(ctx).WherePri(id).Scan(&res); err != nil {
+		err = gerror.Wrap(err, "获取附件信息失败")
+		return
+	}
+	return
+}
+
 // hasFile 检查附件是否存在
 func hasFile(ctx context.Context, md5 string) (res *entity.SysAttachment, err error) {
 	if err = GetModel(ctx).Where("md5", md5).Scan(&res); err != nil {

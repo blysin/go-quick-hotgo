@@ -24,6 +24,7 @@ type VendorDetail struct {
 	ExchangeRate     float64     `json:"exchangeRate"     description:"汇率"`
 	ExchangeRateTime *gtime.Time `json:"exchangeRateTime" description:"汇率时间"`
 	VendorData       string      `json:"vendorData"       description:"工资内容,json格式存储"`
+	Status           int         `json:"status"      description:"状态：0-新增，-1-删除，2已发布"`
 	CreatedAt        *gtime.Time `json:"createdAt"       description:"创建时间"`
 	UpdatedAt        *gtime.Time `json:"updatedAt"       description:"更新时间"`
 	CreateBy         int64       `json:"createBy"         description:"创建人"`

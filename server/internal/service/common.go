@@ -7,6 +7,7 @@ package service
 
 import (
 	"context"
+	"hotgo/internal/model/entity"
 	"hotgo/internal/model/input/commonin"
 	"hotgo/internal/model/input/sysin"
 
@@ -17,6 +18,8 @@ type (
 	ICommonUpload interface {
 		// UploadFile 上传文件
 		UploadFile(ctx context.Context, uploadType string, file *ghttp.UploadFile) (res *sysin.AttachmentListModel, err error)
+		// GetFile 获取文件
+		GetFile(ctx context.Context, id int64) (res *entity.SysAttachment, err error)
 	}
 	ICommonWechat interface {
 		// Authorize 微信用户授权

@@ -8,6 +8,7 @@ package ven
 
 import (
 	"hotgo/addons/supplier_search/model/input/sysin"
+	"hotgo/addons/supplier_search/model/input/venin"
 	"hotgo/internal/model/input/form"
 
 	"github.com/gogf/gf/v2/frame/g"
@@ -57,3 +58,13 @@ type DeleteReq struct {
 }
 
 type DeleteRes struct{}
+
+// EditReq 修改/新增供应商检索
+type SaveReq struct {
+	g.Meta `path:"/vendor/save" method:"post" tags:"供应商检索" summary:"修改/新增供应商检索"`
+	venin.VenSaveInp
+}
+
+type SaveRes struct {
+	Id int64 `json:"id"`
+}

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/antlabs/strsim"
 	"github.com/gogf/gf/v2/encoding/gjson"
+	"github.com/gogf/gf/v2/os/gctx"
+	"github.com/gogf/gf/v2/os/gtime"
 	"github.com/xuri/excelize/v2"
 	"hotgo/addons/supplier_search/model/input/venin"
 	"testing"
@@ -82,4 +84,54 @@ func getFirstRows(rows *excelize.Rows) ([]string, error) {
 		break
 	}
 	return results[0], rows.Close()
+}
+
+func TestFromExchangeRate(t *testing.T) {
+	ctx := gctx.New()
+	rate, err := FromExchangeRate(ctx, "USD")
+	if err != nil {
+		t.Error(err)
+	}
+	t.Log("汇率结果", gjson.MustEncodeString(rate))
+
+	t.Log("again")
+
+	rate, err = FromExchangeRate(ctx, "USD")
+	if err != nil {
+		t.Error(err)
+	}
+	t.Log("汇率结果", gjson.MustEncodeString(rate))
+
+	t.Log("again")
+
+	rate, err = FromExchangeRate(ctx, "USD")
+	if err != nil {
+		t.Error(err)
+	}
+	t.Log("汇率结果", gjson.MustEncodeString(rate))
+
+}
+
+func TestFormatTime(t *testing.T) {
+	fmt.Println("now:", gtime.Now().String())
+
+	ut := "2021-6-11 09:01:00"
+	tt := formatTime(&ut)
+	tt2, _ := gtime.StrToTime(ut)
+	fmt.Println(ut, tt.String(), tt2.String())
+
+	ut = "2021-06-05 09:01"
+	tt = formatTime(&ut)
+	tt2, _ = gtime.StrToTime(ut)
+	fmt.Println(ut, tt.String(), tt2.String())
+
+	ut = "2021-06-5 9:01"
+	tt = formatTime(&ut)
+	tt2, _ = gtime.StrToTime(ut)
+	fmt.Println(ut, tt.String(), tt2.String())
+
+	ut = "2021-06-11 9:1"
+	tt = formatTime(&ut)
+	tt2, _ = gtime.StrToTime(ut)
+	fmt.Println(ut, tt.String(), tt2.String())
 }

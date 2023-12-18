@@ -26,6 +26,7 @@ type VendorDetail struct {
 	ExchangeRate     interface{} // 汇率
 	ExchangeRateTime *gtime.Time // 汇率时间
 	VendorData       interface{} // 工资内容,json格式存储
+	Status           interface{} // 状态：0-新增，-1-删除，2已发布
 	CreatedAt        *gtime.Time // 创建时间
 	UpdatedAt        *gtime.Time // 更新时间
 	CreateBy         interface{} // 创建人

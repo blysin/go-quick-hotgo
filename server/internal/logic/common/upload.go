@@ -9,6 +9,7 @@ import (
 	"context"
 	"github.com/gogf/gf/v2/net/ghttp"
 	"hotgo/internal/library/storager"
+	"hotgo/internal/model/entity"
 	"hotgo/internal/model/input/sysin"
 	"hotgo/internal/service"
 	"hotgo/utility/format"
@@ -36,5 +37,11 @@ func (s *sCommonUpload) UploadFile(ctx context.Context, uploadType string, file 
 		SysAttachment: *attachment,
 		SizeFormat:    format.FileSize(attachment.Size),
 	}
+	return
+}
+
+// GetFile 获取文件
+func (s *sCommonUpload) GetFile(ctx context.Context, id int64) (res *entity.SysAttachment, err error) {
+	res, err = storager.GetById(ctx, id)
 	return
 }

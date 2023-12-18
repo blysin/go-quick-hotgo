@@ -31,32 +31,14 @@ func (c *cVendor) List(ctx context.Context, req *ven.ListReq) (res *ven.ListRes,
 	return
 }
 
-// Export 导出供应商检索列表
-func (c *cVendor) Export(ctx context.Context, req *ven.ExportReq) (res *ven.ExportRes, err error) {
-	err = service.SysVendor().Export(ctx, &req.VendorListInp)
-	return
-}
-
-// Edit 更新供应商检索
-func (c *cVendor) Edit(ctx context.Context, req *ven.EditReq) (res *ven.EditRes, err error) {
-	err = service.SysVendor().Edit(ctx, &req.VendorEditInp)
-	return
-}
-
-// View 获取指定供应商检索信息
-func (c *cVendor) View(ctx context.Context, req *ven.ViewReq) (res *ven.ViewRes, err error) {
-	data, err := service.SysVendor().View(ctx, &req.VendorViewInp)
-	if err != nil {
-		return
-	}
-
-	res = new(ven.ViewRes)
-	res.VendorViewModel = data
-	return
-}
-
 // Delete 删除供应商检索
 func (c *cVendor) Delete(ctx context.Context, req *ven.DeleteReq) (res *ven.DeleteRes, err error) {
 	err = service.SysVendor().Delete(ctx, &req.VendorDeleteInp)
 	return
+}
+
+// Save 更新供应商检索
+func (c *cVendor) Save(ctx context.Context, req *ven.SaveReq) (res *ven.SaveRes, err error) {
+	data, err := service.VenService.Save(ctx, &req.VenSaveInp)
+	return &ven.SaveRes{Id: data.Id}, err
 }
