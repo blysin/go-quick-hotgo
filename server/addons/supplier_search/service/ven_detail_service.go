@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"github.com/gogf/gf/v2/database/gdb"
+	"github.com/gogf/gf/v2/frame/g"
 	"hotgo/addons/supplier_search/dao"
 	"hotgo/addons/supplier_search/model/entity"
 	"hotgo/internal/library/hgorm/handler"
@@ -29,9 +30,11 @@ func (s *SVenDetail) PageByVenId(ctx context.Context, venId int, page, pageSize 
 }
 
 func (s *SVenDetail) SaveBatch(ctx context.Context, list *[]entity.VendorDetail) (err error) {
-	mod := s.Model(ctx)
-	_, err = mod.Insert(list)
-	return
+	return g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error {
+		mod := s.Model(ctx)
+		_, e := mod.Insert(list)
+		return e
+	})
 }
 
 func (s *SVenDetail) DeleteByVenId(ctx context.Context, venId int) (err error) {
