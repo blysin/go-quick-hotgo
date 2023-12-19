@@ -45,3 +45,17 @@ func (c *cVendor) Save(ctx context.Context, req *ven.SaveReq) (res *ven.SaveRes,
 	}
 	return &ven.SaveRes{Id: data.Id}, nil
 }
+
+// ListDetail 获取明细表分页数据
+func (c *cVendor) ListDetail(ctx context.Context, req *ven.PageDetailReq) (res *ven.PageDetailRes, err error) {
+	s := service.VenDetailService
+	list, totalCount, err := s.List(ctx, req)
+	if err != nil {
+		return
+	}
+
+	res = new(ven.PageDetailRes)
+	res.List = list
+	res.PageRes.Pack(req, totalCount)
+	return
+}

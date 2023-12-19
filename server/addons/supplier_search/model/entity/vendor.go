@@ -19,4 +19,5 @@ type Vendor struct {
 	UpdatedAt      *gtime.Time `json:"updatedAt"     description:"更新时间"`
 	CreateBy       int64       `json:"createBy"       description:"创建人"`
 	UpdateBy       int64       `json:"updateBy"       description:"更新人"`
+	Currency       string      `json:"currency"       description:"货币"`
 }

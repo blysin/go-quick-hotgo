@@ -53,12 +53,6 @@ func (s *sSysVendor) List(ctx context.Context, in *sysin.VendorListInp) (list []
 		mod = mod.WhereBetween(dao.Vendor.Columns().CreatedAt, in.CreatedAt[0], in.CreatedAt[1])
 	}
 
-	// 关联表fmVendorDetail
-	mod = mod.LeftJoin(hgorm.GenJoinOnRelation(
-		dao.Vendor.Table(), dao.Vendor.Columns().Id, // 主表表名,关联字段
-		dao.VendorDetail.Table(), "fmVendorDetail", dao.VendorDetail.Columns().VendorId, // 关联表表名,别名,关联字段
-	)...)
-
 	// 关联表fmVendorUploadFile
 	mod = mod.LeftJoin(hgorm.GenJoinOnRelation(
 		dao.Vendor.Table(), dao.Vendor.Columns().Id, // 主表表名,关联字段
@@ -77,7 +71,6 @@ func (s *sSysVendor) List(ctx context.Context, in *sysin.VendorListInp) (list []
 
 	// 关联表select
 	fields, err := hgorm.GenJoinSelect(ctx, sysin.VendorListModel{}, &dao.Vendor, []*hgorm.Join{
-		{Dao: &dao.VendorDetail, Alias: "fmVendorDetail"},
 		{Dao: &dao.VendorUploadFile, Alias: "fmVendorUploadFile"},
 	})
 

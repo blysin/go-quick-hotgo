@@ -77,7 +77,7 @@ type VendorViewModel struct {
 // VendorListInp 获取供应商检索列表
 type VendorListInp struct {
 	form.PageReq
-	Id        int           `json:"id"        dc:"自增ID"`
+	Id        int64         `json:"id"        dc:"自增ID"`
 	CreatedAt []*gtime.Time `json:"createdAt" dc:"创建时间"`
 }
 
@@ -86,9 +86,9 @@ func (in *VendorListInp) Filter(ctx context.Context) (err error) {
 }
 
 type VendorListModel struct {
-	Id         int         `json:"id"         dc:"自增ID"`
+	Id         int64       `json:"id"         dc:"自增ID"`
 	VendorName string      `json:"vendorName" dc:"供应商名称"`
-	IsDeleted  int         `json:"isDeleted"  dc:"是否删除，0：未删除，1：已删除"`
+	Status     int         `json:"status"  dc:"状态：0-新增，-1-删除，2已发布"`
 	CreatedAt  *gtime.Time `json:"createdAt"  dc:"创建时间"`
 	UpdatedAt  *gtime.Time `json:"updatedAt"  dc:"更新时间"`
 	CreateBy   int64       `json:"createBy"   dc:"创建人"`
@@ -97,11 +97,22 @@ type VendorListModel struct {
 
 // VendorExportModel 导出供应商检索
 type VendorExportModel struct {
-	Id         int         `json:"id"         dc:"自增ID"`
+	Id         int64       `json:"id"         dc:"自增ID"`
 	VendorName string      `json:"vendorName" dc:"供应商名称"`
 	IsDeleted  int         `json:"isDeleted"  dc:"是否删除，0：未删除，1：已删除"`
 	CreatedAt  *gtime.Time `json:"createdAt"  dc:"创建时间"`
 	UpdatedAt  *gtime.Time `json:"updatedAt"  dc:"更新时间"`
 	CreateBy   int64       `json:"createBy"   dc:"创建人"`
 	UpdateBy   int64       `json:"updateBy"   dc:"更新人"`
+}
+
+type VendorDetailListModel struct {
+	Id           int    `json:"id"         dc:"自增ID"`
+	Brand        string `json:"brand"            dc:"品牌"`
+	Barcode      string `json:"barcode"          dc:"条码"`
+	EnglishName  string `json:"englishName"      dc:"英文名称"`
+	Cost         int64  `json:"cost"             dc:"成本、供货价"`
+	SellingPrice int64  `json:"sellingPrice"     dc:"销售价格"`
+	Vendor       string `json:"vendor"           dc:"供应商"`
+	Status       int    `json:"status"  dc:"状态：0-新增，-1-删除，2已发布"`
 }

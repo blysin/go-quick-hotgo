@@ -26,3 +26,11 @@ type UploadRes struct {
 	FileName   string   `json:"file_name"`
 	AllColumns []string `json:"all_columns"`
 }
+
+type ReUploadReq struct {
+	g.Meta `path:"/ven-file/re-upload" method:"post" tags:"供应商" summary:"更新数据，重新上传excel文件"`
+	Id     int64 `json:"id"`
+}
+
+type ReUploadRes struct {
+}

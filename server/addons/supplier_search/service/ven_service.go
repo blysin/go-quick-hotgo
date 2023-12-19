@@ -49,6 +49,12 @@ func (s *SVen) Save(ctx context.Context, req *venin.VenSaveInp) (ven *entity.Ven
 		UpdateBy:       userId,
 	}
 
+	rate, err := util.FromExchangeRate(ctx, req.Exchange)
+	if err != nil {
+		return nil, gerror.Wrap(err, "获取汇率失败")
+	}
+	glog.Info(ctx, "当前汇率：", gjson.MustEncodeString(rate))
+
 	err = g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error {
 		mod := s.Model(ctx)
 
@@ -58,29 +64,7 @@ func (s *SVen) Save(ctx context.Context, req *venin.VenSaveInp) (ven *entity.Ven
 		}
 		ven.Id = id
 
-		rate, e := util.FromExchangeRate(ctx, req.Exchange)
-		if e != nil {
-			return gerror.Wrap(e, "获取汇率失败")
-		}
-
-		glog.Info(ctx, "当前汇率：", gjson.MustEncodeString(rate))
-
-		for i := range *details {
-			// go的遍历机制，如果直接用for中拿去detail对象，拿到的是一个变量副本，对其修改不会影响到原对象，只能已这种方式，用数据+索引的方式去修改原对象
-			(*details)[i].VendorId = id
-			(*details)[i].Status = 0
-			(*details)[i].CreateBy = userId
-			(*details)[i].UpdateBy = userId
-
-			//查询汇率
-			(*details)[i].ExchangeRate = *rate.PriceDig
-			(*details)[i].ExchangeRateTime = rate.Time
-			(*details)[i].Currency = rate.From
-
-			// 计算CNY价格
-			(*details)[i].CostCny = int64(float64((*details)[i].Cost) * *rate.PriceDig)
-			(*details)[i].SellingPriceCny = int64(float64((*details)[i].SellingPrice) * *rate.PriceDig)
-		}
+		presetDetails(details, id, userId, rate)
 
 		// 保存明细表
 		e = VenDetailService.SaveBatch(ctx, details)
@@ -90,6 +74,7 @@ func (s *SVen) Save(ctx context.Context, req *venin.VenSaveInp) (ven *entity.Ven
 
 		// 更新file表数据
 		venFile.VendorId = id
+		venFile.ValidNum = len(*details)
 		e = VenFileService.Update(ctx, venFile)
 
 		return e
@@ -98,6 +83,25 @@ func (s *SVen) Save(ctx context.Context, req *venin.VenSaveInp) (ven *entity.Ven
 	glog.Info(ctx, "保存成功")
 
 	return
+}
+
+func presetDetails(details *[]entity.VendorDetail, id int64, userId int64, rate *util.ExchangeRate) {
+	for i := range *details {
+		// go的遍历机制，如果直接用for中拿去detail对象，拿到的是一个变量副本，对其修改不会影响到原对象，只能已这种方式，用数据+索引的方式去修改原对象
+		(*details)[i].VendorId = id
+		(*details)[i].Status = 0
+		(*details)[i].CreateBy = userId
+		(*details)[i].UpdateBy = userId
+
+		//查询汇率
+		(*details)[i].ExchangeRate = *rate.PriceDig
+		(*details)[i].ExchangeRateTime = rate.Time
+		(*details)[i].Currency = rate.From
+
+		// 计算CNY价格
+		(*details)[i].CostCny = int64(float64((*details)[i].Cost) * *rate.PriceDig)
+		(*details)[i].SellingPriceCny = int64(float64((*details)[i].SellingPrice) * *rate.PriceDig)
+	}
 }
 
 func (s *SVen) analysisExcel(ctx context.Context, fileId int64, presetColumn *venin.PresetColumn) (details *[]entity.VendorDetail, head *[]string, venFileEntity *entity.VendorUploadFile, err error) {
@@ -118,7 +122,22 @@ func (s *SVen) analysisExcel(ctx context.Context, fileId int64, presetColumn *ve
 	}
 
 	venFileEntity = &venFile
-	details, head, err = analysisExcelDetail(path, presetColumn)
+	details, head, _, err = analysisExcelDetail(path, presetColumn)
 
 	return
+}
+
+func (s *SVen) Get(ctx context.Context, id int64) *entity.Vendor {
+	mod := s.Model(ctx)
+	r, err := mod.One("id", id)
+	if err != nil || r == nil {
+		return nil
+	}
+	ven := &entity.Vendor{}
+	err = r.Struct(ven)
+	if err != nil {
+		glog.Error(ctx, "ORM转换失败", err)
+		return nil
+	}
+	return ven
 }

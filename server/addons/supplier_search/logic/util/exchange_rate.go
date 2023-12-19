@@ -28,6 +28,10 @@ type ExchangeRate struct {
 
 // FromExchangeRate 获取汇率，from 转成 CNY
 func FromExchangeRate(ctx context.Context, from string) (*ExchangeRate, error) {
+	if from == "" {
+		return nil, fmt.Errorf("币种不能为空")
+	}
+
 	key := "ex_rate_f:" + from
 	ttl := 24 * time.Hour
 	v, err := gcache.GetOrSetFunc(ctx, key, func(ctx context.Context) (interface{}, error) {

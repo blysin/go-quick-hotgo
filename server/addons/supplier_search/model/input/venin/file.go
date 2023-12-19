@@ -6,7 +6,8 @@ import (
 )
 
 type VenFileListInp struct {
-	FileName       string      `json:"fileName"            description:"文件名称"`
+	VendorId       int64       `json:"vendorId"            description:"供应商id"`
+	FileName       *string     `json:"fileName"            description:"文件名称"`
 	CreatedAtStart *gtime.Time `json:"createdAtStart"          description:"创建时间-开始"`
 	CreatedAtEnd   *gtime.Time `json:"createdAtEnd"          description:"创建时间-结束"`
 }

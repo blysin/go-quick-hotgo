@@ -68,3 +68,15 @@ type SaveReq struct {
 type SaveRes struct {
 	Id int64 `json:"id"`
 }
+
+type PageDetailReq struct {
+	g.Meta `path:"/detail/list" method:"get" tags:"供应商检索" summary:"获取供应商检索列表"`
+	form.PageReq
+	VendorId  int64   `json:"vendor_id" dc:"供应商ID"`
+	BrandName *string `json:"brand_name" dc:"品牌名称"`
+}
+
+type PageDetailRes struct {
+	form.PageRes
+	List []*sysin.VendorDetailListModel `json:"list"   dc:"数据列表"`
+}

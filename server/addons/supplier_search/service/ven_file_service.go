@@ -8,10 +8,13 @@ import (
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gfile"
+	"github.com/gogf/gf/v2/os/glog"
+	"github.com/gogf/gf/v2/text/gstr"
 	"github.com/gogf/gf/v2/util/gconv"
 	"github.com/xuri/excelize/v2"
 	"hotgo/addons/supplier_search/api/admin/ven"
 	"hotgo/addons/supplier_search/dao"
+	"hotgo/addons/supplier_search/logic/util"
 	"hotgo/addons/supplier_search/model/entity"
 	"hotgo/addons/supplier_search/model/input/venin"
 	"hotgo/internal/library/contexts"
@@ -36,8 +39,11 @@ func (s *SVenFile) Model(ctx context.Context, option ...*handler.Option) *gdb.Mo
 // List 获取上传的文件列表
 func (s *SVenFile) List(ctx context.Context, inp venin.VenFileListInp) (list []*entity.VendorUploadFile, err error) {
 	mod := s.Model(ctx)
-	if inp.FileName != "" {
-		mod = mod.Where("file_name like ?", "%"+inp.FileName+"%")
+
+	mod = mod.Where("vendor_id = ?", inp.VendorId)
+
+	if inp.FileName != nil && *inp.FileName != "" {
+		mod = mod.Where("file_name like ?", "%"+*inp.FileName+"%")
 	}
 	if inp.CreatedAtStart != nil {
 		mod = mod.Where("create_time >= ?", inp.CreatedAtStart)
@@ -106,10 +112,109 @@ func (s *SVenFile) Update(ctx context.Context, file *entity.VendorUploadFile) er
 	})
 }
 
-func analysisExcelDetail(path string, presetColumn *venin.PresetColumn) (*[]entity.VendorDetail, *[]string, error) {
+func (s *SVenFile) ReUploadFile(ctx context.Context, vendor *entity.Vendor, attr *sysin.AttachmentListModel) (res *ven.ReUploadRes, err error) {
+	path, err := getFilePath(ctx, attr.Path)
+	if err != nil {
+		return
+	}
+
+	presetColumn := &venin.PresetColumn{}
+
+	err = gjson.DecodeTo(vendor.RequiredColumn, presetColumn)
+	if err != nil {
+		glog.Errorf(ctx, "解析预设字段失败，预设字段：%s", vendor.RequiredColumn)
+		return nil, gerror.New("解析预设字段失败")
+	}
+
+	details, head, brandNames, err := analysisExcelDetail(path, presetColumn)
+	if err != nil {
+		return
+	}
+
+	userId := contexts.GetUserId(ctx)
+
+	venFile := entity.VendorUploadFile{
+		VendorId:  vendor.Id,
+		FileName:  attr.Name,
+		FileId:    attr.Id,
+		ValidNum:  len(*details),
+		AllColumn: strings.Join(*head, ","),
+		CreateBy:  userId,
+		UpdateBy:  userId,
+	}
+
+	// 对比表头，如果不一致，返回错误
+	srcHeads := make([]string, 0, 10)
+	_ = gjson.DecodeTo(vendor.AllColumn, &srcHeads)
+	for _, srcHead := range srcHeads {
+		if !gstr.InArray(*head, srcHead) {
+			return nil, gerror.New("上传的文件表头与原文件不一致")
+		}
+	}
+
+	// 保存数据，1、新增file，2、新增或更新detail，
+	existDetails, err := VenDetailService.ListByBrandNames(ctx, vendor.Id, brandNames)
+	if err != nil {
+		return
+	}
+
+	existDetailMap := make(map[string]*entity.VendorDetail, len(existDetails))
+	for _, detail := range existDetails {
+		existDetailMap[detail.Brand] = detail
+	}
+
+	updateList := make([]entity.VendorDetail, 0, len(*details))
+	insertList := make([]entity.VendorDetail, 0, len(*details))
+
+	rate, err := util.FromExchangeRate(ctx, vendor.Currency)
+	if err != nil {
+		return nil, gerror.Wrap(err, "获取汇率失败")
+	}
+	glog.Info(ctx, "当前汇率：", gjson.MustEncodeString(rate))
+
+	presetDetails(details, vendor.Id, userId, rate)
+
+	for _, detail := range *details {
+		existDetail := existDetailMap[detail.Brand]
+		if existDetail != nil {
+			detail.Id = existDetail.Id
+			detail.Status = existDetail.Status
+			detail.CreatedAt = existDetail.CreatedAt
+			detail.CreateBy = existDetail.CreateBy
+			updateList = append(updateList, detail)
+		} else {
+			insertList = append(insertList, detail)
+		}
+	}
+
+	err = g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error {
+		mod := s.Model(ctx)
+		_, err := mod.Data(&venFile).Insert()
+		if err != nil {
+			return err
+		}
+
+		err = VenDetailService.SaveBatch(ctx, &insertList)
+		if err != nil {
+			return err
+		}
+
+		err = VenDetailService.UpdateBatch(ctx, &updateList)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	return &ven.ReUploadRes{}, err
+
+}
+
+func analysisExcelDetail(path string, presetColumn *venin.PresetColumn) (*[]entity.VendorDetail, *[]string, *[]string, error) {
 	f, err := excelize.OpenFile(path)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	defer func() {
 		_ = f.Close()
@@ -123,14 +228,17 @@ func analysisExcelDetail(path string, presetColumn *venin.PresetColumn) (*[]enti
 
 	fullRows, err := f.GetRows(sheetName)
 	if err != nil {
-		return nil, nil, gerror.New("读取excel文件失败")
+		return nil, nil, nil, gerror.New("读取excel文件失败")
 	}
 	if (len(fullRows)) < 2 {
-		return nil, nil, gerror.New("excel文件内容为空")
+		return nil, nil, nil, gerror.New("excel文件内容为空")
 	}
 
 	vendorDetailArray := make([]entity.VendorDetail, 0, len(fullRows)-1)
 	head := fullRows[0]
+
+	brandNames := make([]string, 10)
+
 	for index, row := range fullRows {
 		if index == 0 {
 			continue
@@ -147,43 +255,44 @@ func analysisExcelDetail(path string, presetColumn *venin.PresetColumn) (*[]enti
 
 		if presetColumn.BrandName != "" {
 			vendorDetail.Brand = rowMap[presetColumn.BrandName]
+			brandNames = append(brandNames, vendorDetail.Brand)
 			if vendorDetail.Brand == "" {
-				return nil, nil, gerror.New("第" + gconv.String(index+1) + "行，品牌名不能为空，字段名：" + presetColumn.BrandName)
+				return nil, nil, nil, gerror.New("第" + gconv.String(index+1) + "行，品牌名不能为空，字段名：" + presetColumn.BrandName)
 			}
 		}
 
 		if presetColumn.BarCode != "" {
 			vendorDetail.Barcode = rowMap[presetColumn.BarCode]
 			if vendorDetail.Barcode == "" {
-				return nil, nil, gerror.New("第" + gconv.String(index+1) + "行，条码不能为空，字段名：" + presetColumn.BarCode)
+				return nil, nil, nil, gerror.New("第" + gconv.String(index+1) + "行，条码不能为空，字段名：" + presetColumn.BarCode)
 			}
 		}
 
 		if presetColumn.EnName != "" {
 			vendorDetail.EnglishName = rowMap[presetColumn.EnName]
 			if vendorDetail.EnglishName == "" {
-				return nil, nil, gerror.New("第" + gconv.String(index+1) + "行，英文名不能为空，字段名：" + presetColumn.EnName)
+				return nil, nil, nil, gerror.New("第" + gconv.String(index+1) + "行，英文名不能为空，字段名：" + presetColumn.EnName)
 			}
 		}
 
 		if presetColumn.SupplyPrice != "" {
 			vendorDetail.Cost = getRowValueInt64(&rowMap, presetColumn.SupplyPrice)
 			if vendorDetail.Cost <= 0 {
-				return nil, nil, gerror.New("第" + gconv.String(index+1) + "行，供货价不能为空或者负数，字段名：" + presetColumn.SupplyPrice)
+				return nil, nil, nil, gerror.New("第" + gconv.String(index+1) + "行，供货价不能为空或者负数，字段名：" + presetColumn.SupplyPrice)
 			}
 		}
 
 		if presetColumn.SalePrice != "" {
 			vendorDetail.SellingPrice = getRowValueInt64(&rowMap, presetColumn.SalePrice)
 			if vendorDetail.SellingPrice <= 0 {
-				return nil, nil, gerror.New("第" + gconv.String(index+1) + "行，销售价不能为空或者负数，字段名：" + presetColumn.SalePrice)
+				return nil, nil, nil, gerror.New("第" + gconv.String(index+1) + "行，销售价不能为空或者负数，字段名：" + presetColumn.SalePrice)
 			}
 		}
 
 		if presetColumn.VendorName != "" {
 			vendorDetail.Vendor = rowMap[presetColumn.VendorName]
 			if vendorDetail.Vendor == "" {
-				return nil, nil, gerror.New("第" + gconv.String(index+1) + "行，供应商不能为空，字段名：" + presetColumn.VendorName)
+				return nil, nil, nil, gerror.New("第" + gconv.String(index+1) + "行，供应商不能为空，字段名：" + presetColumn.VendorName)
 			}
 		}
 
@@ -192,7 +301,27 @@ func analysisExcelDetail(path string, presetColumn *venin.PresetColumn) (*[]enti
 		vendorDetailArray = append(vendorDetailArray, vendorDetail)
 	}
 
-	return &vendorDetailArray, &head, nil
+	// brandNames不允许重复
+	hasDup, name := hasDuplicates(brandNames)
+	if hasDup {
+		return nil, nil, nil, gerror.New("存在重复品牌名:" + name)
+	}
+
+	return &vendorDetailArray, &head, &brandNames, nil
+}
+
+func hasDuplicates(arr []string) (bool, string) {
+	elements := make(map[string]bool)
+	for _, v := range arr {
+		if v == "" {
+			continue
+		}
+		if elements[v] {
+			return true, v
+		}
+		elements[v] = true
+	}
+	return false, ""
 }
 
 func getRowValueInt64(rowMap *map[string]string, key string) int64 {
@@ -200,7 +329,7 @@ func getRowValueInt64(rowMap *map[string]string, key string) int64 {
 	if v == "" {
 		return 0
 	}
-	return gconv.Int64(v) * 100
+	return gconv.Int64(gconv.Float64(v) * 100)
 }
 
 func analysisExcelHead(path string) ([]string, *venin.PresetColumn, error) {
