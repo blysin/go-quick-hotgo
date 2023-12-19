@@ -115,3 +115,24 @@ func (s *SVenDetail) List(ctx context.Context, req *ven.PageDetailReq) (list []*
 
 	return
 }
+
+// ChangeStatus 修改供应商检索状态
+func (s *SVenDetail) ChangeStatus(ctx context.Context, id int64, status int) (err error) {
+	if (NORMAL != status) && (DELETE != status) && (PUBLISHED != status) {
+		return gerror.New("状态值不正确")
+	}
+	_, err = s.Model(ctx).Data(g.Map{"status": status}).Where("id = ?", id).Update()
+	return
+}
+
+// ChangeStatusByVenId 修改供应商检索状态
+func (s *SVenDetail) ChangeStatusByVenId(ctx context.Context, venId int64, status int) (err error) {
+	if (NORMAL != status) && (DELETE != status) && (PUBLISHED != status) {
+		return gerror.New("状态值不正确")
+	}
+	err = g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error {
+		_, err = s.Model(ctx).Data(g.Map{"status": status}).Where("vendor_id = ?", venId).Update()
+		return err
+	})
+	return
+}

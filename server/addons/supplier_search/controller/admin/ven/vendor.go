@@ -8,6 +8,7 @@ package ven
 
 import (
 	"context"
+	"github.com/gogf/gf/v2/util/gconv"
 	"hotgo/addons/supplier_search/api/admin/ven"
 	"hotgo/addons/supplier_search/service"
 )
@@ -43,7 +44,9 @@ func (c *cVendor) Save(ctx context.Context, req *ven.SaveReq) (res *ven.SaveRes,
 	if err != nil {
 		return
 	}
-	return &ven.SaveRes{Id: data.Id}, nil
+	return &ven.SaveRes{
+		Vendor: data,
+	}, nil
 }
 
 // ListDetail 获取明细表分页数据
@@ -57,5 +60,16 @@ func (c *cVendor) ListDetail(ctx context.Context, req *ven.PageDetailReq) (res *
 	res = new(ven.PageDetailRes)
 	res.List = list
 	res.PageRes.Pack(req, totalCount)
+	return
+}
+
+// ChangeStatus 获取明细表分页数据
+func (c *cVendor) ChangeStatus(ctx context.Context, req *ven.ChangeStatusReq) (res *ven.ChangeStatusRes, err error) {
+	if req.DetailId != nil && *req.DetailId != gconv.Int64(0) {
+		err = service.VenDetailService.ChangeStatus(ctx, *req.DetailId, req.Status)
+	} else {
+		err = service.VenService.ChangeStatus(ctx, req.VendorId, req.Status)
+	}
+
 	return
 }

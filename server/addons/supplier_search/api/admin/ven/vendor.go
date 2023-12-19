@@ -7,6 +7,7 @@
 package ven
 
 import (
+	"hotgo/addons/supplier_search/model/entity"
 	"hotgo/addons/supplier_search/model/input/sysin"
 	"hotgo/addons/supplier_search/model/input/venin"
 	"hotgo/internal/model/input/form"
@@ -66,7 +67,7 @@ type SaveReq struct {
 }
 
 type SaveRes struct {
-	Id int64 `json:"id"`
+	*entity.Vendor
 }
 
 type PageDetailReq struct {
@@ -79,4 +80,14 @@ type PageDetailReq struct {
 type PageDetailRes struct {
 	form.PageRes
 	List []*sysin.VendorDetailListModel `json:"list"   dc:"数据列表"`
+}
+
+type ChangeStatusReq struct {
+	g.Meta   `path:"/vendor/change-status" method:"POST" tags:"供应商检索" summary:"获取供应商检索列表"`
+	VendorId int64  `json:"vendor_id" dc:"供应商ID"`
+	DetailId *int64 `json:"detail_id" dc:"明细ID"`
+	Status   int    `json:"status" dc:"状态"`
+}
+
+type ChangeStatusRes struct {
 }
