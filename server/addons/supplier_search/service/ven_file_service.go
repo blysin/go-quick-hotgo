@@ -50,7 +50,7 @@ func (s *SVenFile) List(ctx context.Context, inp venin.VenFileListInp) (list []*
 }
 
 func (s *SVenFile) UploadFile(ctx context.Context, fileName string, attr *sysin.AttachmentListModel) (res *ven.UploadRes, err error) {
-	// todo 解析excel文件
+	// 解析excel文件
 	// 获取当前用户
 	user := contexts.GetUser(ctx)
 
@@ -98,6 +98,14 @@ func (s *SVenFile) GetById(ctx context.Context, id int64) (entity.VendorUploadFi
 	return venFile, err
 }
 
+func (s *SVenFile) Update(ctx context.Context, file *entity.VendorUploadFile) error {
+	return g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error {
+		mod := s.Model(ctx)
+		_, err := mod.Data(file).Where("id = ?", file.Id).Update()
+		return err
+	})
+}
+
 func analysisExcelDetail(path string, presetColumn *venin.PresetColumn) (*[]entity.VendorDetail, *[]string, error) {
 	f, err := excelize.OpenFile(path)
 	if err != nil {
@@ -137,32 +145,49 @@ func analysisExcelDetail(path string, presetColumn *venin.PresetColumn) (*[]enti
 			rowMap[head[i]] = v
 		}
 
-		vendorDetail.Brand = rowMap[presetColumn.BrandName]
-		vendorDetail.Barcode = rowMap[presetColumn.BarCode]
-		vendorDetail.EnglishName = rowMap[presetColumn.EnName]
-		vendorDetail.Cost = getRowValueInt64(&rowMap, presetColumn.SupplyPrice)
-		vendorDetail.SellingPrice = getRowValueInt64(&rowMap, presetColumn.SalePrice)
-		vendorDetail.Vendor = rowMap[presetColumn.VendorName]
-		vendorDetail.VendorData = gjson.MustEncodeString(row)
+		if presetColumn.BrandName != "" {
+			vendorDetail.Brand = rowMap[presetColumn.BrandName]
+			if vendorDetail.Brand == "" {
+				return nil, nil, gerror.New("第" + gconv.String(index+1) + "行，品牌名不能为空，字段名：" + presetColumn.BrandName)
+			}
+		}
 
-		if vendorDetail.Brand == "" {
-			return nil, nil, gerror.New("第" + gconv.String(index+1) + "行，品牌名不能为空")
+		if presetColumn.BarCode != "" {
+			vendorDetail.Barcode = rowMap[presetColumn.BarCode]
+			if vendorDetail.Barcode == "" {
+				return nil, nil, gerror.New("第" + gconv.String(index+1) + "行，条码不能为空，字段名：" + presetColumn.BarCode)
+			}
 		}
-		if vendorDetail.Barcode == "" {
-			return nil, nil, gerror.New("第" + gconv.String(index+1) + "行，条码不能为空")
+
+		if presetColumn.EnName != "" {
+			vendorDetail.EnglishName = rowMap[presetColumn.EnName]
+			if vendorDetail.EnglishName == "" {
+				return nil, nil, gerror.New("第" + gconv.String(index+1) + "行，英文名不能为空，字段名：" + presetColumn.EnName)
+			}
 		}
-		if vendorDetail.EnglishName == "" {
-			return nil, nil, gerror.New("第" + gconv.String(index+1) + "行，英文名不能为空")
+
+		if presetColumn.SupplyPrice != "" {
+			vendorDetail.Cost = getRowValueInt64(&rowMap, presetColumn.SupplyPrice)
+			if vendorDetail.Cost <= 0 {
+				return nil, nil, gerror.New("第" + gconv.String(index+1) + "行，供货价不能为空或者负数，字段名：" + presetColumn.SupplyPrice)
+			}
 		}
-		if vendorDetail.Cost <= 0 {
-			return nil, nil, gerror.New("第" + gconv.String(index+1) + "行，供货价不能为空或者负数")
+
+		if presetColumn.SalePrice != "" {
+			vendorDetail.SellingPrice = getRowValueInt64(&rowMap, presetColumn.SalePrice)
+			if vendorDetail.SellingPrice <= 0 {
+				return nil, nil, gerror.New("第" + gconv.String(index+1) + "行，销售价不能为空或者负数，字段名：" + presetColumn.SalePrice)
+			}
 		}
-		if vendorDetail.SellingPrice <= 0 {
-			return nil, nil, gerror.New("第" + gconv.String(index+1) + "行，销售价不能为空或者负数")
+
+		if presetColumn.VendorName != "" {
+			vendorDetail.Vendor = rowMap[presetColumn.VendorName]
+			if vendorDetail.Vendor == "" {
+				return nil, nil, gerror.New("第" + gconv.String(index+1) + "行，供应商不能为空，字段名：" + presetColumn.VendorName)
+			}
 		}
-		if vendorDetail.Vendor == "" {
-			return nil, nil, gerror.New("第" + gconv.String(index+1) + "行，供应商不能为空")
-		}
+
+		vendorDetail.VendorData = gjson.MustEncodeString(row)
 
 		vendorDetailArray = append(vendorDetailArray, vendorDetail)
 	}

@@ -40,5 +40,8 @@ func (c *cVendor) Delete(ctx context.Context, req *ven.DeleteReq) (res *ven.Dele
 // Save 更新供应商检索
 func (c *cVendor) Save(ctx context.Context, req *ven.SaveReq) (res *ven.SaveRes, err error) {
 	data, err := service.VenService.Save(ctx, &req.VenSaveInp)
-	return &ven.SaveRes{Id: data.Id}, err
+	if err != nil {
+		return
+	}
+	return &ven.SaveRes{Id: data.Id}, nil
 }
