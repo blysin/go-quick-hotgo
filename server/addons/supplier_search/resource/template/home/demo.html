@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+          name="viewport">
+    <meta content="ie=edge" http-equiv="X-UA-Compatible">
+    <title>Document</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.3.4/vue.global.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/naive-ui/2.34.4/index.js"></script>
+    <style>
+        .carousel-img {
+            width: 100%;
+            height: 240px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <n-watermark
+            :font-size="16"
+            :height="384"
+            :line-height="16"
+            :rotate="-15"
+            :width="384"
+            :x-offset="12"
+            :y-offset="60"
+            cross
+            fullscreen
+            v-if="true"
+    ></n-watermark>
+    <n-button type="primary">{{ message }}</n-button>
+    <n-carousel show-arrow>
+        <img
+                class="carousel-img"
+                src="https://naive-ui.oss-cn-beijing.aliyuncs.com/carousel-img/carousel1.jpeg"
+        >
+        <img
+                class="carousel-img"
+                src="https://naive-ui.oss-cn-beijing.aliyuncs.com/carousel-img/carousel2.jpeg"
+        >
+        <img
+                class="carousel-img"
+                src="https://naive-ui.oss-cn-beijing.aliyuncs.com/carousel-img/carousel3.jpeg"
+        >
+        <img
+                class="carousel-img"
+                src="https://naive-ui.oss-cn-beijing.aliyuncs.com/carousel-img/carousel4.jpeg"
+        >
+    </n-carousel>
+
+</div>
+<script>
+    const App = {
+        setup() {
+            return {
+                message: 'hello world button'
+            }
+        }
+    }
+    const app = Vue.createApp(App)
+    app.use(naive)
+    app.mount('#app')
+</script>
+</body>
+</html>
