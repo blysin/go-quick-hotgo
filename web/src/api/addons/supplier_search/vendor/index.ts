@@ -46,3 +46,22 @@ export function View(params) {
 export function Export(params) {
   jumpExport('/supplier_search/vendor/export', params);
 }
+
+
+// 获取供应商检索指定详情
+export function GetCurrnecyList(params) {
+  return http.request({
+    url: '/supplier_search/currency/get',
+    method: 'GET',
+    params,
+  });
+}
+
+// 获取供应商检索指定详情
+export function SaveCurrnecyList(params) {
+  return http.request({
+    url: '/supplier_search/currency/save',
+    method: 'POST',
+    params,
+  });
+}

@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="n-layout-page-header">
-      <n-card :bordered="false" title="供应商检索">
-        <!--  这是由系统生成的CURD表格，你可以将此行注释改为表格的描述 -->
-      </n-card>
+<!--      <n-card :bordered="false" title="供应商检索">-->
+<!--          这是由系统生成的CURD表格，你可以将此行注释改为表格的描述-->
+<!--      </n-card>-->
     </div>
     <n-card :bordered="false" class="proCard">
 
@@ -62,7 +62,7 @@
           </n-button>
           <n-button
             type="primary"
-            @click="handleExport"
+            @click="managerCurrency"
             class="min-left-space"
             v-if="hasPermission(['/supplier_search/vendor/export'])"
           >
@@ -73,6 +73,20 @@
             </template>
             导出
           </n-button>
+
+          <n-button
+            type="primary"
+            @click="managerCurrency"
+            class="min-left-space"
+          >
+            <template #icon>
+              <n-icon>
+                <DollarOutlined />
+              </n-icon>
+            </template>
+            币种管理
+          </n-button>
+
         </template>
       </BasicTable>
     </n-card>
@@ -80,6 +94,12 @@
       @reloadTable="reloadTable"
       @updateShowModal="updateShowModal"
       :showModal="showModal"
+      :formParams="formParams"
+    />
+    <EditCurrency
+      @reloadTable="reloadTable"
+      @updateShowCurrencyModal="updateShowCurrencyModal"
+      :showModal="showCurrencyModal"
       :formParams="formParams"
     />
   </div>
@@ -93,10 +113,11 @@
   import { usePermission } from '@/hooks/web/usePermission';
   import { List, Export, Delete } from '@/api/addons/supplier_search/vendor';
   import { State, columns, schemas, options, newState } from './model';
-  import { PlusOutlined, ExportOutlined, DeleteOutlined } from '@vicons/antd';
+  import { PlusOutlined, ExportOutlined, DeleteOutlined,DollarOutlined } from '@vicons/antd';
   import { useRouter } from 'vue-router';
   import { getOptionLabel } from '@/utils/hotgo';
   import Edit from './edit.vue';
+  import EditCurrency from './edit_currency.vue';
   const { hasPermission } = usePermission();
   const router = useRouter();
   const actionRef = ref();
@@ -106,6 +127,7 @@
   const batchDeleteDisabled = ref(true);
   const checkedIds = ref([]);
   const showModal = ref(false);
+  const showCurrencyModal = ref(false);
   const formParams = ref<State>();
 
   const actionColumn = reactive({
@@ -163,6 +185,11 @@
   function updateShowModal(value) {
     showModal.value = value;
   }
+
+  function updateShowCurrencyModal(value) {
+    showCurrencyModal.value = value;
+  }
+
 
   function onCheckedRow(rowKeys) {
     batchDeleteDisabled.value = rowKeys.length <= 0;
@@ -223,6 +250,11 @@
   function handleExport() {
     message.loading('正在导出列表...', { duration: 1200 });
     Export(searchFormRef.value?.formModel);
+  }
+
+  function managerCurrency() {
+    // message.info('币种管理');
+    showCurrencyModal.value = true;
   }
 
 

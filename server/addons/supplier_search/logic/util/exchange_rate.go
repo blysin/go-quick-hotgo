@@ -51,6 +51,7 @@ func FromExchangeRate(ctx context.Context, from string) (*ExchangeRate, error) {
 		appSecret := "DjVf11uDBjwZstIKptq17JNaeJ2eoRe7"
 
 		url := "https://www.mxnzp.com/api/exchange_rate/aim?from=%s&to=CNY&app_id=%s&app_secret=%s"
+		//https://www.mxnzp.com/api/exchange_rate/aim?from=JPY&to=CNY&app_id=tloqllfhllnrcjlf&app_secret=DjVf11uDBjwZstIKptq17JNaeJ2eoRe7
 		url = fmt.Sprintf(url, from, appId, appSecret)
 
 		resp := &ExchangeRateResp{}

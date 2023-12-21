@@ -199,6 +199,8 @@ type (
 		ConversionType(ctx context.Context, models *entity.SysAddonsConfig) (value interface{}, err error)
 		// UpdateConfigByGroup 更新指定分组的配置
 		UpdateConfigByGroup(ctx context.Context, in *sysin.UpdateAddonsConfigInp) (err error)
+		// GetConfigByCondition 根据条件获取
+		GetConfigByCondition(ctx context.Context, condition *entity.SysAddonsConfig) (list *[]entity.SysAddonsConfig, err error)
 	}
 	ISysGenCodes interface {
 		// Delete 删除

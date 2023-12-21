@@ -74,6 +74,19 @@ func (s *sSysAddonsConfig) GetConfigByGroup(ctx context.Context, in *sysin.GetAd
 	return
 }
 
+// GetConfigByCondition 根据条件获取
+func (s *sSysAddonsConfig) GetConfigByCondition(ctx context.Context, condition *entity.SysAddonsConfig) (list *[]entity.SysAddonsConfig, err error) {
+	var (
+		mod    = dao.SysAddonsConfig.Ctx(ctx)
+		models []entity.SysAddonsConfig
+	)
+
+	if err = mod.Where(condition).OmitEmptyWhere().Scan(&models); err != nil {
+		return nil, err
+	}
+	return &models, nil
+}
+
 // ConversionType 转换类型
 func (s *sSysAddonsConfig) ConversionType(ctx context.Context, models *entity.SysAddonsConfig) (value interface{}, err error) {
 	if models == nil {
