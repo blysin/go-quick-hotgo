@@ -25,15 +25,21 @@ func (s *SVenDetail) Model(ctx context.Context, option ...*handler.Option) *gdb.
 	return handler.Model(dao.VendorDetail.Ctx(ctx), option...)
 }
 
-func (s *SVenDetail) PageByVenId(ctx context.Context, venId int, page, pageSize int) (list []*entity.VendorDetail, total int, err error) {
+func (s *SVenDetail) PageByVenId(ctx context.Context, venId int64, page, pageSize int) (list []*entity.VendorDetail, total int, err error) {
 	mod := s.Model(ctx)
 	mod = mod.Where("vendor_id = ?", venId)
 	err = mod.Page(page, pageSize).Scan(&list, &total)
 	return
 }
 
-func (s *SVenDetail) SaveBatch(ctx context.Context, list *[]entity.VendorDetail) (err error) {
-	if len(*list) == 0 {
+func (s *SVenDetail) ListByVenId(ctx context.Context, venId int64) (list []*entity.VendorDetail, err error) {
+	mod := s.Model(ctx)
+	err = mod.Where("vendor_id = ?", venId).Scan(&list)
+	return
+}
+
+func (s *SVenDetail) SaveBatch(ctx context.Context, list []*entity.VendorDetail) (err error) {
+	if len(list) == 0 {
 		return
 	}
 	return g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error {
@@ -43,14 +49,14 @@ func (s *SVenDetail) SaveBatch(ctx context.Context, list *[]entity.VendorDetail)
 	})
 }
 
-func (s *SVenDetail) UpdateBatch(ctx context.Context, list *[]entity.VendorDetail) error {
-	if len(*list) == 0 {
+func (s *SVenDetail) UpdateBatch(ctx context.Context, list []*entity.VendorDetail) error {
+	if len(list) == 0 {
 		return nil
 	}
 	return g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error {
 		mod := s.Model(ctx)
 
-		for _, v := range *list {
+		for _, v := range list {
 			_, e := mod.Data(v).Where("id = ?", v.Id).Update()
 			if e != nil {
 				return e

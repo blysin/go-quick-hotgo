@@ -53,7 +53,7 @@
 
 <script lang="ts" setup>
 import {computed, onMounted, ref, watch} from 'vue';
-import {newState, State} from './model';
+import {Currency, newState, State} from './model';
 import {useMessage} from 'naive-ui';
 import {adaModalWidth} from '@/utils/hotgo';
 import {ArrowDown, ArrowUp} from '@vicons/ionicons5'
@@ -88,7 +88,7 @@ const message = useMessage();
 const formRef = ref<any>({});
 const dialogWidth = ref('75%');
 const formBtnLoading = ref(false);
-const currencyList = ref([])
+const currencyList = ref<Currency[]>([]);
 
 
 onMounted(async () => {

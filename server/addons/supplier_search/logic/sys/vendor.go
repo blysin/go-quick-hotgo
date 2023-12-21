@@ -48,9 +48,19 @@ func (s *sSysVendor) List(ctx context.Context, in *sysin.VendorListInp) (list []
 		mod = mod.Where(dao.Vendor.Columns().Id, in.Id)
 	}
 
+	if in.VendorName != "" {
+		mod = mod.WhereLike(dao.Vendor.Columns().VendorName, "%"+in.VendorName+"%")
+	}
+
 	// 查询创建时间
 	if len(in.CreatedAt) == 2 {
 		mod = mod.WhereBetween(dao.Vendor.Columns().CreatedAt, in.CreatedAt[0], in.CreatedAt[1])
+	}
+
+	if in.Status != nil {
+		mod = mod.Where(dao.Vendor.Columns().Status, *in.Status)
+	} else {
+		mod = mod.WhereGT(dao.Vendor.Columns().Status, service.DELETE)
 	}
 
 	// 关联表fmVendorUploadFile

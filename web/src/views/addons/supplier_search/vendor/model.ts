@@ -1,14 +1,7 @@
-import { h, ref } from 'vue';
-import { NAvatar, NImage, NTag, NSwitch, NRate } from 'naive-ui';
-import { cloneDeep } from 'lodash-es';
-import { FormSchema } from '@/components/Form';
-import { Dicts } from '@/api/dict/dict';
-
-import { isArray, isNullObject } from '@/utils/is';
-import { getFileExt } from '@/utils/urlUtils';
-import { defRangeShortcuts, defShortcuts, formatToDate } from '@/utils/dateUtil';
-import { validate } from '@/utils/validateUtil';
-import { getOptionLabel, getOptionTag, Options, errorImg } from '@/utils/hotgo';
+import {ref} from 'vue';
+import {cloneDeep} from 'lodash-es';
+import {FormSchema} from '@/components/Form';
+import {defRangeShortcuts} from '@/utils/dateUtil';
 
 
 export interface State {
@@ -50,21 +43,89 @@ export const rules = {
     type: 'string',
     message: '请输入供应商名称',
   },
-  allColumn: {
+  exchange: {
     required: true,
     trigger: ['blur', 'input'],
     type: 'string',
-    message: '请输入完整字段，多个用英文逗号隔开',
+    message: '请选择',
   },
+
+  "presetColumn.brandName": {
+    required: true,
+    trigger: ['blur', 'input'],
+    type: 'string',
+    message: '请选择',
+  },
+  "presetColumn.barCode": {
+    required: true,
+    trigger: ['blur', 'input'],
+    type: 'string',
+    message: '请选择',
+  },
+  "presetColumn.enName": {
+    required: true,
+    trigger: ['blur', 'input'],
+    type: 'string',
+    message: '请选择',
+  },
+  "presetColumn.supplyPrice": {
+    required: true,
+    trigger: ['blur', 'input'],
+    type: 'string',
+    message: '请选择',
+  },
+  "presetColumn.salePrice": {
+    required: true,
+    trigger: ['blur', 'input'],
+    type: 'string',
+    message: '请选择',
+  },
+  "presetColumn.vendorName": {
+    required: true,
+    trigger: ['blur', 'input'],
+    type: 'string',
+    message: '请选择',
+  },
+
 };
+
+export const Status = {
+  normal: {
+    value: 0,
+    label: "未发布"
+  },
+  delete: {
+    value: -1,
+    label: "已删除"
+  },
+  published: {
+    value: 2,
+    label: "已发布"
+  },
+}
+
+export const StatusList = [
+  {
+    value: 0,
+    label: "未发布"
+  },
+  {
+    value: -1,
+    label: "已删除"
+  },
+  {
+    value: 2,
+    label: "已发布"
+  },
+]
 
 export const schemas = ref<FormSchema[]>([
   {
-    field: 'id',
-    component: 'NInputNumber',
-    label: '自增ID',
+    field: 'vendorName',
+    component: 'NInput',
+    label: '名称',
     componentProps: {
-      placeholder: '请输入自增ID',
+      placeholder: '请输入',
       onUpdateValue: (e: any) => {
         console.log(e);
       },
@@ -83,28 +144,36 @@ export const schemas = ref<FormSchema[]>([
       },
     },
   },
+  {
+    field: 'status',
+    component: 'NSelect',
+    label: '状态',
+    componentProps: {
+      placeholder: '选择',
+      options: StatusList,
+      onUpdateValue: (e: any) => {
+        console.log(e);
+      },
+    },
+  },
 ]);
 
 export const columns = [
   {
-    title: '自增ID',
-    key: 'id',
-  },
-  {
-    title: '供应商名称',
+    title: '名称',
     key: 'vendorName',
   },
   {
-    title: '是否删除，0：未删除，1：已删除',
-    key: 'isDeleted',
+    title: '币种',
+    key: 'currency',
+  },
+  {
+    title: '状态',
+    key: 'statusName',
   },
   {
     title: '创建时间',
     key: 'createdAt',
-  },
-  {
-    title: '更新时间',
-    key: 'updatedAt',
   },
   {
     title: '创建人',
@@ -115,3 +184,40 @@ export const columns = [
     key: 'updateBy',
   },
 ];
+
+export interface UploadResponse {
+  brandName: string;
+  barCode: string;
+  enName: string;
+  supplyPrice: string;
+  salePrice: string;
+  vendorName: string;
+  id: number;
+  file_name: string;
+  all_columns: string[];
+}
+
+export interface PresetColumn {
+  brandName: string;
+  barCode: string;
+  enName: string;
+  supplyPrice: string;
+  salePrice: string;
+  vendorName: string;
+}
+
+export interface SaveParam {
+  id: number;
+  status: number;
+  vendorName: string;
+  fileId: number;
+  exchange: string;
+  presetColumn: PresetColumn;
+}
+
+
+export interface Currency {
+  name: string;
+  desc: string;
+}
+

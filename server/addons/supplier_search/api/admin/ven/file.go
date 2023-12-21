@@ -18,6 +18,7 @@ type FileListRes *venin.VenFileListModel
 
 type UploadReq struct {
 	g.Meta `path:"/ven-file/upload" method:"post" tags:"供应商" summary:"上传excel文件"`
+	Id     *int64 `json:"id"`
 }
 
 type UploadRes struct {
@@ -33,4 +34,13 @@ type ReUploadReq struct {
 }
 
 type ReUploadRes struct {
+}
+
+type DownloadReq struct {
+	g.Meta `path:"/ven-file/download" method:"GET" tags:"供应商" summary:"下载文件"`
+	Id     int64 `json:"id"`
+}
+
+type DownloadRes struct {
+	Url string `json:"url"`
 }

@@ -91,3 +91,13 @@ type ChangeStatusReq struct {
 
 type ChangeStatusRes struct {
 }
+
+type VenViewReq struct {
+	g.Meta `path:"/vendor/get" method:"GET" tags:"供应商检索" summary:"获取主表明细"`
+	Id     int64 `json:"id" dc:"供应商ID"`
+}
+
+type VenViewRes struct {
+	*entity.Vendor
+	Files []*entity.VendorUploadFile `json:"files" dc:"文件列表"`
+}

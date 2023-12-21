@@ -52,7 +52,7 @@ type VendorEditModel struct{}
 
 // VendorDeleteInp 删除供应商检索
 type VendorDeleteInp struct {
-	Id interface{} `json:"id" v:"required#自增ID不能为空" dc:"自增ID"`
+	Id int64 `json:"id" v:"required#自增ID不能为空" dc:"自增ID"`
 }
 
 func (in *VendorDeleteInp) Filter(ctx context.Context) (err error) {
@@ -77,8 +77,10 @@ type VendorViewModel struct {
 // VendorListInp 获取供应商检索列表
 type VendorListInp struct {
 	form.PageReq
-	Id        int64         `json:"id"        dc:"自增ID"`
-	CreatedAt []*gtime.Time `json:"createdAt" dc:"创建时间"`
+	Id         int64         `json:"id"        dc:"自增ID"`
+	VendorName string        `json:"vendorName" dc:"供应商名称"`
+	Status     *int          `json:"status"    dc:"状态：0-新增，-1-删除，2已发布"`
+	CreatedAt  []*gtime.Time `json:"createdAt" dc:"创建时间"`
 }
 
 func (in *VendorListInp) Filter(ctx context.Context) (err error) {
@@ -89,6 +91,7 @@ type VendorListModel struct {
 	Id         int64       `json:"id"         dc:"自增ID"`
 	VendorName string      `json:"vendorName" dc:"供应商名称"`
 	Status     int         `json:"status"  dc:"状态：0-新增，-1-删除，2已发布"`
+	Currency   string      `json:"currency"  dc:"币种"`
 	CreatedAt  *gtime.Time `json:"createdAt"  dc:"创建时间"`
 	UpdatedAt  *gtime.Time `json:"updatedAt"  dc:"更新时间"`
 	CreateBy   int64       `json:"createBy"   dc:"创建人"`
