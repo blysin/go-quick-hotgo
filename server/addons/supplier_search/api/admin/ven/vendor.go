@@ -73,8 +73,7 @@ type SaveRes struct {
 type PageDetailReq struct {
 	g.Meta `path:"/detail/list" method:"get" tags:"供应商检索" summary:"获取供应商检索列表"`
 	form.PageReq
-	VendorId  int64   `json:"vendor_id" dc:"供应商ID"`
-	BrandName *string `json:"brand_name" dc:"品牌名称"`
+	entity.VendorDetail
 }
 
 type PageDetailRes struct {

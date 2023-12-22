@@ -144,9 +144,16 @@ const actionColumn = reactive({
   key: 'action',
   // fixed: 'right',
   render(record) {
+    let size = 'tiny';
     let btns = {
       style: 'button',
       actions: [
+        {
+          label: '查看',
+          size,
+          onClick: handleView.bind(null, record),
+          auth: ['/supplier_search/vendor/view'],
+        },
       ],
       // dropDownActions: [
       //   {
@@ -161,7 +168,6 @@ const actionColumn = reactive({
       //   }
       // },
     };
-    let size = 'tiny';
     let delBtn = {
       label: '删除',
       size,

@@ -99,9 +99,24 @@ func (s *SVenDetail) ListByBrandNames(ctx context.Context, id int64, names *[]st
 func (s *SVenDetail) List(ctx context.Context, req *ven.PageDetailReq) (list []*sysin.VendorDetailListModel, totalCount int, err error) {
 	mod := s.Model(ctx)
 
-	mod = mod.Where("vendor_id = ?", req.VendorId)
-	if req.BrandName != nil && *req.BrandName != "" {
-		mod = mod.Where("brand like ?", "%"+*req.BrandName+"%")
+	if req.VendorId != 0 {
+		mod = mod.Where("vendor_id = ?", req.VendorId)
+	}
+
+	if req.Brand != "" {
+		mod = mod.Where("brand like ?", "%"+req.Brand+"%")
+	}
+
+	if req.Vendor != "" {
+		mod = mod.Where("vendor like ?", "%"+req.Vendor+"%")
+	}
+
+	if req.Barcode != "" {
+		mod = mod.Where("barcode like ?", "%"+req.Barcode+"%")
+	}
+
+	if req.Status != -99 {
+		mod = mod.Where("status = ?", req.Status)
 	}
 
 	totalCount, err = mod.Clone().Count()
@@ -114,7 +129,7 @@ func (s *SVenDetail) List(ctx context.Context, req *ven.PageDetailReq) (list []*
 		return
 	}
 
-	if err = mod.Page(req.Page, req.PerPage).OrderDesc("id").Scan(&list); err != nil {
+	if err = mod.Page(req.Page, req.PerPage).Scan(&list); err != nil {
 		err = gerror.Wrap(err, "获取供应商检索列表失败，请稍后重试！")
 		return
 	}

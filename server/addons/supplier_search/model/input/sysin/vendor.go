@@ -110,12 +110,19 @@ type VendorExportModel struct {
 }
 
 type VendorDetailListModel struct {
-	Id           int    `json:"id"         dc:"自增ID"`
-	Brand        string `json:"brand"            dc:"品牌"`
-	Barcode      string `json:"barcode"          dc:"条码"`
-	EnglishName  string `json:"englishName"      dc:"英文名称"`
-	Cost         int64  `json:"cost"             dc:"成本、供货价"`
-	SellingPrice int64  `json:"sellingPrice"     dc:"销售价格"`
-	Vendor       string `json:"vendor"           dc:"供应商"`
-	Status       int    `json:"status"  dc:"状态：0-新增，-1-删除，2已发布"`
+	Id               int64       `json:"id"               description:"自增ID"`
+	VendorId         int64       `json:"vendorId"         description:"供应商主表id"`
+	Brand            string      `json:"brand"            description:"品牌"`
+	Barcode          string      `json:"barcode"          description:"条码"`
+	EnglishName      string      `json:"englishName"      description:"英文名称"`
+	Cost             int64       `json:"cost"             description:"成本、供货价"`
+	CostCny          int64       `json:"costCny"          description:"成本、供货价-人民币"`
+	SellingPrice     int64       `json:"sellingPrice"     description:"销售价格"`
+	SellingPriceCny  int64       `json:"sellingPriceCny"  description:"销售价格-人民币"`
+	Vendor           string      `json:"vendor"           description:"供应商"`
+	Currency         string      `json:"currency"         description:"币种"`
+	ExchangeRate     float64     `json:"exchangeRate"     description:"汇率"`
+	ExchangeRateTime *gtime.Time `json:"exchangeRateTime" description:"汇率时间"`
+	VendorData       string      `json:"vendorData"       description:"工资内容,json格式存储"`
+	Status           int         `json:"status"      description:"状态：0-新增，-1-删除，2已发布"`
 }

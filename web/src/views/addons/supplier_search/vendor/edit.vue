@@ -5,7 +5,7 @@
         v-model:show="isShowModal"
         :show-icon="false"
         preset="dialog"
-        :title="params?.id > 0 ? '编辑 #' + params?.id : '添加供应商数据'"
+        :title="params?.id > 0 ? '编辑供应商 #' + params?.id : '添加供应商数据'"
         :style="{
           width: dialogWidth,
         }"
@@ -50,7 +50,7 @@
           :label-width="100"
           class="py-4"
         >
-          <n-divider title-placement="left">
+          <n-divider title-placement="left" v-show="showStep">
             基础信息
           </n-divider>
           <n-form-item label="供应商名称" path="vendorName">
@@ -406,7 +406,7 @@ function loadForm(value) {
   console.log("loadForm", value);
   if (value.id) {
     current.value = 2;
-
+    showStep.value = false;
     GetVendor({
       id: value.id
     }).then((_res) => {
@@ -441,6 +441,7 @@ function loadForm(value) {
     current.value = 1;
     params.value = data;
     uploadResponse.value = uploadData;
+    showStep.value = true;
   }
 
 

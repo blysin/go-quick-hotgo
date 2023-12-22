@@ -40,7 +40,7 @@ func UploadFile(ctx context.Context, url string, filePath string) error {
 	if data == nil {
 		return gerror.New("读取文件失败")
 	}
-	cli.SetHeader("Content-Type", "application/zip")
+	cli.SetHeader("Content-Type", "application/octet-stream")
 	cli.SetHeader("x-oss-meta-author", "aliy")
 	cli.SetHeader("Content-Length", strconv.Itoa(len(data)))
 
