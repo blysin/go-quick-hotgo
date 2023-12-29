@@ -8,11 +8,11 @@
     <n-card :bordered="false" class="proCard">
 
       <BasicForm
-        @register="register"
-        @submit="reloadTable"
-        @reset="reloadTable"
-        @keyup.enter="reloadTable"
         ref="searchFormRef"
+        @register="register"
+        @reset="reloadTable"
+        @submit="reloadTable"
+        @keyup.enter="reloadTable"
       >
         <template #statusSlot="{ model, field }">
           <n-input v-model:value="model[field]"/>
@@ -20,24 +20,24 @@
       </BasicForm>
 
       <BasicTable
-        :openChecked="true"
-        :columns="columns"
-        :request="loadDataTable"
-        :row-key="(row) => row.id"
         ref="actionRef"
         :actionColumn="actionColumn"
         :checked-row-keys="checkedIds"
-        @update:checked-row-keys="onCheckedRow"
-        :scroll-x="1090"
+        :columns="columns"
+        :openChecked="true"
+        :request="loadDataTable"
         :resizeHeightOffset="-10000"
+        :row-key="(row) => row.id"
+        :scroll-x="1090"
         size="small"
+        @update:checked-row-keys="onCheckedRow"
       >
         <template #tableTitle>
           <n-button
+            v-if="hasPermission(['/supplier_search/vendor/edit'])"
+            class="min-left-space"
             type="primary"
             @click="addTable"
-            class="min-left-space"
-            v-if="hasPermission(['/supplier_search/vendor/edit'])"
           >
             <template #icon>
               <n-icon>
@@ -47,11 +47,11 @@
             添加
           </n-button>
           <n-button
-            type="error"
-            @click="handleBatchDelete"
+            v-if="hasPermission(['/supplier_search/vendor/delete'])"
             :disabled="batchDeleteDisabled"
             class="min-left-space"
-            v-if="hasPermission(['/supplier_search/vendor/delete'])"
+            type="error"
+            @click="handleBatchDelete"
           >
             <template #icon>
               <n-icon>
@@ -60,24 +60,24 @@
             </template>
             批量删除
           </n-button>
-<!--          <n-button-->
-<!--            type="primary"-->
-<!--            @click="managerCurrency"-->
-<!--            class="min-left-space"-->
-<!--            v-if="hasPermission(['/supplier_search/vendor/export'])"-->
-<!--          >-->
-<!--            <template #icon>-->
-<!--              <n-icon>-->
-<!--                <ExportOutlined/>-->
-<!--              </n-icon>-->
-<!--            </template>-->
-<!--            导出-->
-<!--          </n-button>-->
+          <!--          <n-button-->
+          <!--            type="primary"-->
+          <!--            @click="managerCurrency"-->
+          <!--            class="min-left-space"-->
+          <!--            v-if="hasPermission(['/supplier_search/vendor/export'])"-->
+          <!--          >-->
+          <!--            <template #icon>-->
+          <!--              <n-icon>-->
+          <!--                <ExportOutlined/>-->
+          <!--              </n-icon>-->
+          <!--            </template>-->
+          <!--            导出-->
+          <!--          </n-button>-->
 
           <n-button
+            class="min-left-space"
             type="primary"
             @click="managerCurrency"
-            class="min-left-space"
           >
             <template #icon>
               <n-icon>
@@ -91,17 +91,17 @@
       </BasicTable>
     </n-card>
     <Edit
-      @reloadTable="reloadTable"
-      @updateShowModal="updateShowModal"
-      :showModal="showModal"
       :formParams="formParams"
       :fullCurrency="fullCurrency"
+      :showModal="showModal"
+      @reloadTable="reloadTable"
+      @updateShowModal="updateShowModal"
     />
     <EditCurrency
+      :formParams="formParams"
+      :showModal="showCurrencyModal"
       @reloadTable="reloadTable"
       @updateShowCurrencyModal="updateShowCurrencyModal"
-      :showModal="showCurrencyModal"
-      :formParams="formParams"
     />
   </div>
 </template>
@@ -120,7 +120,7 @@ import {
   List
 } from '@/api/addons/supplier_search/vendor';
 import {columns, Currency, newState, schemas, State, Status, StatusList} from './model';
-import {DeleteOutlined, DollarOutlined, ExportOutlined, PlusOutlined} from '@vicons/antd';
+import {DeleteOutlined, DollarOutlined, PlusOutlined} from '@vicons/antd';
 import {useRouter} from 'vue-router';
 import Edit from './edit.vue';
 import EditCurrency from './edit_currency.vue';
@@ -213,7 +213,7 @@ const actionColumn = reactive({
     if (record.status === Status.delete.value) {
       btns.actions.push(recBtn);
     }
-    return h(TableAction as any,btns );
+    return h(TableAction as any, btns);
   },
 });
 

@@ -100,3 +100,12 @@ type VenViewRes struct {
 	*entity.Vendor
 	Files []*entity.VendorUploadFile `json:"files" dc:"文件列表"`
 }
+
+type PageApiReq struct {
+	g.Meta `path:"/vendor/page" method:"GET" tags:"供应商检索" summary:"获取主表明细"`
+	venin.VenPageApiInp
+}
+
+type PageApiRes struct {
+	venin.PageApiModel
+}

@@ -1,18 +1,18 @@
 <template>
   <n-upload
-    multiple
-    directory-dnd
-    accept=".xlsx"
-    action="/supplier_search/ven-file/upload"
-    :max="1"
     :custom-request="customRequest"
     :data="{
       id: props.venId,
     }"
+    :max="1"
+    accept=".xlsx"
+    action="/supplier_search/ven-file/upload"
+    directory-dnd
+    multiple
   >
     <n-upload-dragger>
       <div style="margin-bottom: 12px">
-        <n-icon size="48" :depth="3">
+        <n-icon :depth="3" size="48">
           <archive-icon/>
         </n-icon>
       </div>
@@ -63,7 +63,7 @@ const customRequest = ({
   formData.append("file", file.file as File)
 
   UploadFile(formData).then((resp) => {
-    console.log("upload resp",resp)
+    console.log("upload resp", resp)
     emit('uploadSuccessFunc', resp)
     onFinish()
   }).catch((error) => {
@@ -74,5 +74,5 @@ const customRequest = ({
 
 
 </script>
-<style scoped lang="scss">
+<style lang="scss" scoped>
 </style>

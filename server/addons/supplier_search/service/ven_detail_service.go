@@ -66,13 +66,13 @@ func (s *SVenDetail) UpdateBatch(ctx context.Context, list []*entity.VendorDetai
 	})
 }
 
-func (s *SVenDetail) DeleteByVenId(ctx context.Context, venId int) (err error) {
+func (s *SVenDetail) DeleteByVenId(ctx context.Context, venId int64) (err error) {
 	mod := s.Model(ctx)
 	_, err = mod.Where("vendor_id = ?", venId).Delete()
 	return
 }
 
-func (s *SVenDetail) GetById(ctx context.Context, id int) (detail *entity.VendorDetail, err error) {
+func (s *SVenDetail) GetById(ctx context.Context, id int64) (detail *entity.VendorDetail, err error) {
 	mod := s.Model(ctx)
 	err = mod.Where("id = ?", id).Scan(&detail)
 	return
@@ -142,7 +142,25 @@ func (s *SVenDetail) ChangeStatus(ctx context.Context, id int64, status int) (er
 	if (NORMAL != status) && (DELETE != status) && (PUBLISHED != status) {
 		return gerror.New("状态值不正确")
 	}
-	_, err = s.Model(ctx).Data(g.Map{"status": status}).Where("id = ?", id).Update()
+	err = g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error {
+		_, err = s.Model(ctx).Data(g.Map{"status": status}).Where("id = ?", id).Update()
+		if err != nil {
+			return err
+		}
+
+		// 获取detail表数据
+		detail, err := s.GetById(ctx, id)
+		if err != nil {
+			return err
+		}
+		// 更新索引
+		details := []*entity.VendorDetail{detail}
+
+		err = VenIndexService.UpdateIndex(ctx, details)
+
+		return err
+	})
+
 	return
 }
 
@@ -153,7 +171,22 @@ func (s *SVenDetail) ChangeStatusByVenId(ctx context.Context, venId int64, statu
 	}
 	err = g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error {
 		_, err = s.Model(ctx).Data(g.Map{"status": status}).Where("vendor_id = ?", venId).Update()
+
+		if err != nil {
+			return err
+		}
+
+		var details []*entity.VendorDetail
+		// 获取detail表数据
+		err = s.Model(ctx).Where("vendor_id = ?", venId).Fields("barcode", "id").Scan(&details)
+		if err != nil {
+			return err
+		}
+
+		err = VenIndexService.UpdateIndex(ctx, details)
+
 		return err
 	})
+
 	return
 }

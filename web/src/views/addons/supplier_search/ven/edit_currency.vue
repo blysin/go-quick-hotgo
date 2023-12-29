@@ -4,11 +4,11 @@
       <n-modal
         v-model:show="isShowModal"
         :show-icon="false"
-        preset="dialog"
-        :title="'编辑币种'"
         :style="{
           width: dialogWidth,
         }"
+        :title="'编辑币种'"
+        preset="dialog"
       >
         <n-scrollbar style="max-height: 300px">
           <n-table :bordered="false" :single-line="true" size="small">
@@ -25,12 +25,12 @@
               <td>{{ item.name }}</td>
               <td>{{ item.desc }}</td>
               <td>
-                <n-icon size="30" title="上移" class="arrow-btn" v-if="index!==0"
+                <n-icon v-if="index!==0" class="arrow-btn" size="30" title="上移"
                         @click="move(item.name,-1)">
                   <ArrowUp/>
                 </n-icon>
-                <n-icon size="30" title="下移" class="arrow-btn"
-                        v-if="index !== currencyList.length -1" @click="move(item.name,1)">
+                <n-icon v-if="index !== currencyList.length -1" class="arrow-btn" size="30"
+                        title="下移" @click="move(item.name,1)">
                   <ArrowDown/>
                 </n-icon>
 
@@ -43,7 +43,7 @@
         <template #action>
           <n-space>
             <n-button @click="closeForm">取消</n-button>
-            <n-button type="info" :loading="formBtnLoading" @click="confirmForm">确定</n-button>
+            <n-button :loading="formBtnLoading" type="info" @click="confirmForm">确定</n-button>
           </n-space>
         </template>
       </n-modal>

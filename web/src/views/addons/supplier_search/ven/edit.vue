@@ -4,33 +4,33 @@
       <n-modal
         v-model:show="isShowModal"
         :show-icon="false"
-        preset="dialog"
-        :title="params?.id > 0 ? '编辑供应商 #' + params?.id : '添加供应商数据'"
         :style="{
           width: dialogWidth,
         }"
+        :title="params?.id > 0 ? '编辑供应商 #' + params?.id : '添加供应商数据'"
+        preset="dialog"
       >
         <n-steps
-          size="small"
+          v-show="showStep"
           :current="(current as number)"
           :status="currentStatus"
-          v-show="showStep"
+          size="small"
         >
           <n-step
-            title="上传数据"
             description="仅支持上传.xlsx数据"
+            title="上传数据"
           />
           <n-step
-            title="修改基础信息"
             description="修改数据基础信息"
+            title="修改基础信息"
           />
           <n-step
-            title="发布"
             description="保存完数据后需要发布才能生效"
+            title="发布"
           />
           <n-step
-            title="成功"
             description="数据创建完成"
+            title="成功"
           />
         </n-steps>
 
@@ -42,29 +42,29 @@
 
         <n-form
           v-if="current === 2 || current === 3"
+          ref="formRef"
+          :label-width="100"
           :model="params"
           :rules="rules"
-          ref="formRef"
-          size="small"
-          label-placement="left"
-          :label-width="100"
           class="py-4"
+          label-placement="left"
+          size="small"
         >
-          <n-divider title-placement="left" v-show="showStep">
+          <n-divider v-show="showStep" title-placement="left">
             基础信息
           </n-divider>
           <n-form-item label="供应商名称" path="vendorName">
-            <n-input placeholder="请输入供应商名称" v-model:value="params.vendorName"/>
+            <n-input v-model:value="params.vendorName" placeholder="请输入供应商名称"/>
           </n-form-item>
 
           <n-form-item label="币种" path="exchange">
             <n-select
-              label-field="desc"
-              value-field="name"
               v-model:value="params.exchange"
-              filterable
-              placeholder="请选择币种"
               :options="fullCurrency"
+              filterable
+              label-field="desc"
+              placeholder="请选择币种"
+              value-field="name"
             />
           </n-form-item>
 
@@ -72,16 +72,16 @@
             字段确认
           </n-divider>
 
-          <n-grid x-gap="12" :cols="3">
+          <n-grid :cols="3" x-gap="12">
             <n-gi>
               <n-form-item
                 label="品牌名字段"
                 path="presetColumn.brandName">
                 <n-select
                   v-model:value="params.presetColumn.brandName"
+                  :options="filterFullColumns"
                   filterable
                   placeholder="选择字段"
-                  :options="filterFullColumns"
                 />
               </n-form-item>
             </n-gi>
@@ -90,9 +90,9 @@
                            path="presetColumn.enName">
                 <n-select
                   v-model:value="params.presetColumn.enName"
+                  :options="filterFullColumns"
                   filterable
                   placeholder="选择字段"
-                  :options="filterFullColumns"
                 />
               </n-form-item>
             </n-gi>
@@ -101,45 +101,42 @@
                            path="presetColumn.vendorName">
                 <n-select
                   v-model:value="params.presetColumn.vendorName"
+                  :options="filterFullColumns"
                   filterable
                   placeholder="选择字段"
-                  :options="filterFullColumns"
                 />
               </n-form-item>
             </n-gi>
           </n-grid>
 
-          <n-grid x-gap="12" :cols="3">
+          <n-grid :cols="3" x-gap="12">
             <n-gi>
-              <n-form-item label="销售价字段"
-                           path="presetColumn.salePrice">
+              <n-form-item label="销售价字段" path="presetColumn.salePrice">
                 <n-select
                   v-model:value="params.presetColumn.salePrice"
+                  :options="filterFullColumns"
                   filterable
                   placeholder="选择字段"
-                  :options="filterFullColumns"
                 />
               </n-form-item>
             </n-gi>
             <n-gi>
-              <n-form-item label="供货价字段"
-                           path="presetColumn.supplyPrice">
+              <n-form-item label="供货价字段" path="presetColumn.supplyPrice">
                 <n-select
                   v-model:value="params.presetColumn.supplyPrice"
+                  :options="filterFullColumns"
                   filterable
                   placeholder="选择字段"
-                  :options="filterFullColumns"
                 />
               </n-form-item>
             </n-gi>
             <n-gi>
-              <n-form-item label="条码字段"
-                           path="presetColumn.barCode">
+              <n-form-item label="条码字段" path="presetColumn.barCode">
                 <n-select
                   v-model:value="params.presetColumn.barCode"
+                  :options="filterFullColumns"
                   filterable
                   placeholder="选择字段"
-                  :options="filterFullColumns"
                 />
               </n-form-item>
             </n-gi>
@@ -151,19 +148,18 @@
 
         <template #action>
           <n-space>
-            <n-button @click="closeForm">取消</n-button>
-            <n-button type="info" :loading="formBtnLoading" @click="nextStep"
-                      :disabled="!uploadResponse || !uploadResponse.id"
-                      v-if="current === 1">下一步
+            <n-button @click="closeForm">｛｛params.id !== 0 ?'关闭':'取消'｝｝</n-button>
+            <n-button v-if="current === 1" :disabled="!uploadResponse || !uploadResponse.id" :loading="formBtnLoading"
+                      type="info" @click="nextStep">下一步
             </n-button>
-            <n-button strong secondary type="warning" :loading="formBtnLoading" @click="preStep"
-                      v-if="current !== 1 && params.id === 0">重新上传文件
+            <n-button v-if="current !== 1 && params.id === 0" :loading="formBtnLoading" secondary strong type="warning"
+                      @click="preStep">重新上传文件
             </n-button>
-            <n-button type="info" :loading="formBtnLoading" @click="publish"
-                      v-if="params.id !== 0 && params.status === 0">发布
+            <n-button v-if="params.id !== 0 && params.status === 0" :loading="formBtnLoading" type="info"
+                      @click="publish">发布
             </n-button>
-            <n-button type="info" :loading="formBtnLoading" @click="confirmForm"
-                      v-if="current === 2 || current === 3">确定
+            <n-button v-if="current === 2 || current === 3" :loading="formBtnLoading" type="info"
+                      @click="confirmForm">确定
             </n-button>
           </n-space>
         </template>
@@ -443,8 +439,6 @@ function loadForm(value) {
     uploadResponse.value = uploadData;
     showStep.value = true;
   }
-
-
 
 
 }

@@ -25,7 +25,7 @@ gfcli:
       - link: "mysql:leedarson:QR#tqARO@tcp(192.168.5.133:3306)/hotgo?loc=Local&parseTime=true"
         group: "default" # 分组 使用hotgo代码生成功能时必须填
         path: "addons/supplier_search"
-        tables: "hg_fm_vendor,hg_fm_vendor_detail,hg_fm_vendor_upload_file"                                    # 指定当前数据库中需要执行代码生成的数据表。如果为空，表示数据库的所有表都会生成。
+        tables: "hg_fm_vendor_index"                                    # 指定当前数据库中需要执行代码生成的数据表。如果为空，表示数据库的所有表都会生成。
         tablesEx: "hg_sys_addons_install"                        # 指定当前数据库中需要排除代码生成的数据表。
         removePrefix: "hg_fm_"
         descriptionTag: true

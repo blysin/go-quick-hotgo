@@ -76,7 +76,7 @@ func (c *cVendor) ListDetail(ctx context.Context, req *ven.PageDetailReq) (res *
 	return
 }
 
-// ChangeStatus 获取明细表分页数据
+// ChangeStatus 修改状态
 func (c *cVendor) ChangeStatus(ctx context.Context, req *ven.ChangeStatusReq) (res *ven.ChangeStatusRes, err error) {
 	if req.DetailId != nil && *req.DetailId != gconv.Int64(0) {
 		err = service.VenDetailService.ChangeStatus(ctx, *req.DetailId, req.Status)

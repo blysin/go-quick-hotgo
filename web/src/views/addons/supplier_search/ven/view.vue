@@ -3,8 +3,8 @@
     <div class="n-layout-page-header">
       <n-card :bordered="false" title="供应商检索详情"> <!-- CURD详情页--> </n-card>
     </div>
-    <n-card :bordered="false" class="proCard mt-4" size="small" :segmented="{ content: true }">
-      <n-descriptions label-placement="left" class="py-2" column="3">
+    <n-card :bordered="false" :segmented="{ content: true }" class="proCard mt-4" size="small">
+      <n-descriptions class="py-2" column="3" label-placement="left">
         <n-descriptions-item>
           <template #label>供应商名称</template>
           {{ formValue.vendorName }}
@@ -34,41 +34,41 @@
 
       </n-descriptions>
 
-      <n-tabs type="line" animated>
+      <n-tabs animated type="line">
         <n-tab-pane name="明细列表" tab="明细列表">
           <n-space>
             <n-form
+              :style="{
+                maxWidth: '800px'
+              }"
+              inline
               label-placement="left"
               label-width="auto"
               require-mark-placement="right-hanging"
               size="small"
-              inline
-              :style="{
-                maxWidth: '800px'
-              }"
             >
               <n-form-item label="品牌：" path="brand">
-                <n-input placeholder="" @keyup.enter="formQuery" v-bind:on-clear="formQuery"
-                         clearable v-model:value="formParam.brand"/>
+                <n-input v-model:value="formParam.brand" clearable placeholder=""
+                         v-bind:on-clear="formQuery" @keyup.enter="formQuery"/>
               </n-form-item>
               <n-form-item label="条码：" path="barcode">
-                <n-input placeholder="" @keyup.enter="formQuery" v-bind:on-clear="formQuery"
-                         clearable v-model:value="formParam.barcode"/>
+                <n-input v-model:value="formParam.barcode" clearable placeholder=""
+                         v-bind:on-clear="formQuery" @keyup.enter="formQuery"/>
               </n-form-item>
               <n-form-item label="供应商：" path="vendor">
-                <n-input placeholder="" @keyup.enter="formQuery" v-bind:on-clear="formQuery"
-                         clearable v-model:value="formParam.vendor"/>
+                <n-input v-model:value="formParam.vendor" clearable placeholder=""
+                         v-bind:on-clear="formQuery" @keyup.enter="formQuery"/>
               </n-form-item>
               <n-form-item label="状态：" path="status">
-                <select v-model="formParam.status" @change="formQuery"
-                        class="cus-select n-input n-input--resizable n-input--stateful">
+                <select v-model="formParam.status" class="cus-select n-input n-input--resizable n-input--stateful"
+                        @change="formQuery">
                   <option value="-99">全部</option>
                   <option v-for="item in statusList" :value="item.value">{{ item.label }}</option>
                 </select>
               </n-form-item>
             </n-form>
 
-            <n-button type="primary" size="small" @click="formQuery">查询</n-button>
+            <n-button size="small" type="primary" @click="formQuery">查询</n-button>
           </n-space>
 
           <n-spin :show="isLoading">
@@ -104,14 +104,14 @@
                 <td>{{ getStatus(item.status) }}</td>
                 <td>
                   <n-space>
-                    <n-button type="primary" size="tiny" @click="viewData(item)">查看</n-button>
+                    <n-button size="tiny" type="primary" @click="viewData(item)">查看</n-button>
 
                     <n-popconfirm
                       v-if="item.status === Status.published.value"
                       @positive-click="changeStatus(item.id,Status.normal)"
                     >
                       <template #trigger>
-                        <n-button type="error" size="tiny">撤销</n-button>
+                        <n-button size="tiny" type="error">撤销</n-button>
                       </template>
                       是否确认撤销该数据？
                     </n-popconfirm>
@@ -121,7 +121,7 @@
                       @positive-click="changeStatus(item.id,Status.published)"
                     >
                       <template #trigger>
-                        <n-button type="success" size="tiny">发布</n-button>
+                        <n-button size="tiny" type="success">发布</n-button>
                       </template>
                       是否确认发布该数据？
                     </n-popconfirm>
@@ -132,15 +132,15 @@
             </n-table>
             <div class="pagination">
               <n-pagination
-                class="pagination"
+                v-model:item-count="page.total"
                 v-model:page="page.current"
                 v-model:page-size="page.pageSize"
-                v-model:item-count="page.total"
+                :page-sizes="[10, 20, 30, 40]"
+                class="pagination"
+                show-size-picker
+
                 v-bind:on-update:page="changePage"
                 v-bind:on-update:page-size="changePageSize"
-
-                show-size-picker
-                :page-sizes="[10, 20, 30, 40]"
               >
                 <template #suffix="{ itemCount }">
                   共 {{ itemCount }} 条
@@ -179,14 +179,14 @@
     <n-modal v-model:show="showModal" :title="currentItem.brand +'详情'" positive-text="确认"
              @positive-click="showModal = false">
       <n-card
-        style="width: 600px"
-        :title="currentItem.brand +'详情'"
         :bordered="false"
-        role="dialog"
+        :title="currentItem.brand +'详情'"
         aria-modal="true"
+        role="dialog"
+        style="width: 600px"
       >
         <template #header-extra>
-          <n-button text style="font-size: 24px;color: black;" @click="showModal = false">
+          <n-button style="font-size: 24px;color: black;" text @click="showModal = false">
             <n-icon>
               <cash-icon/>
             </n-icon>
@@ -194,7 +194,7 @@
         </template>
 
         <n-scrollbar style="max-height: 500px">
-          <n-table :bordered="false" :single-line="false" striped size="medium">
+          <n-table :bordered="false" :single-line="false" size="medium" striped>
             <tbody>
             <tr v-for="item in currentItem.dataArray">
               <td style="text-align: right;width: 10em;">{{ item.name }}:</td>
