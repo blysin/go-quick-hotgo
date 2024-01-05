@@ -144,38 +144,45 @@ func (s *SVenIndex) Page(ctx context.Context, req venin.VenPageApiInp) (res *ven
 		list  []*entity.VendorDetail
 		total int
 	)
-	mod := VenDetailService.Model(ctx)
-	mod.InnerJoin("vendor_index b", "b.ven_detail_id = a.id")
+
+	mod := g.Model("hg_fm_vendor_detail a").
+		InnerJoin("hg_fm_vendor_index b", "b.ven_detail_id = a.id").
+		Where("b.status = ?", IndexStatusOk)
+
 	if req.VendorName != "" {
-		mod = mod.Where("vendor_name like ?", "%"+req.VendorName+"%")
+		mod = mod.Where("a.vendor like ?", "%"+req.VendorName+"%")
 	}
 	if req.CostStart > 0 {
-		mod = mod.Where("cost >= ?", req.CostStart)
+		mod = mod.Where("a.cost >= ?", req.CostStart)
 	}
 	if req.CostEnd > 0 {
-		mod = mod.Where("cost <= ?", req.CostEnd)
+		mod = mod.Where("a.cost <= ?", req.CostEnd)
 	}
 	if req.CostCnyStart > 0 {
-		mod = mod.Where("cost_cny >= ?", req.CostCnyStart)
+		mod = mod.Where("a.cost_cny >= ?", req.CostCnyStart)
 	}
 	if req.CostCnyEnd > 0 {
-		mod = mod.Where("cost_cny <= ?", req.CostCnyEnd)
+		mod = mod.Where("a.cost_cny <= ?", req.CostCnyEnd)
 	}
 	if req.OrderByPriceAsc == 1 {
-		mod = mod.Order("cost_cny asc")
+		mod = mod.Order("a.cost_cny asc")
 	} else {
 		if req.OrderBy == 1 {
-			mod = mod.Order("cost desc")
+			mod = mod.Order("a.cost desc")
 		}
-	}
-	err = mod.Page(req.Page, req.PerPage).Scan(&list)
-	if err != nil {
-		return
 	}
 	total, err = mod.Count()
 	if err != nil {
 		return
 	}
+
+	mod.Fields("a.`id`", "a.`vendor_id`", "a.`brand`", "a.`barcode`", "a.`english_name`", "a.`cost`", "a.`cost_cny`", "a.`selling_price`", "a.`selling_price_cny`", "a.`vendor`", "a.`currency`", "a.`exchange_rate`", "a.`exchange_rate_time`", "a.`vendor_data`", "a.`status`", "a.`created_at`", "a.`updated_at`")
+
+	err = mod.Page(req.Page, req.PerPage).Scan(&list)
+	if err != nil {
+		return
+	}
+
 	res = &venin.PageApiModel{
 		PageRes: form.PageRes{
 			PageReq:    req.PageReq,

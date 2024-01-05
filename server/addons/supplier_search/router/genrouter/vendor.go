@@ -13,4 +13,6 @@ import (
 func init() {
 	LoginRequiredRouter = append(LoginRequiredRouter, ven.Vendor)   // 供应商检索
 	LoginRequiredRouter = append(LoginRequiredRouter, ven.Currency) // 供应商检索
+
+	NoLoginRouter = append(NoLoginRouter, ven.VendorMobile) // 供应商检索
 }
