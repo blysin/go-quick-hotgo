@@ -4,7 +4,7 @@
 // @Author  Ms <133814250@qq.com>
 // @License  https://github.com/bufanyun/hotgo/blob/master/LICENSE
 // @AutoGenerate Version 2.11.5
-package ven
+package api
 
 import (
 	"context"
@@ -20,7 +20,7 @@ var (
 type cVendorMobile struct{}
 
 type PageDetailReq struct {
-	g.Meta `path:"/m/index/list" method:"get" tags:"供应商检索" summary:"获取供应商检索列表"`
+	g.Meta `path:"/index/list" method:"get" tags:"供应商检索" summary:"获取供应商检索列表"`
 	venin.VenPageApiInp
 }
 

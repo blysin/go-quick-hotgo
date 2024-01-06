@@ -15,13 +15,14 @@ type VenSaveInp struct {
 
 type VenPageApiInp struct {
 	form.PageReq
-	VendorName      string `json:"vendor_name" dc:"供应商名称"`
-	OrderBy         int    `json:"order_by" dc:"排序"`
-	OrderByPriceAsc int    `json:"order_by_price_asc" dc:"价格升序"`
-	CostStart       int    `json:"cost_start" dc:"价格区间-开始"`
-	CostEnd         int    `json:"cost_end" dc:"价格区间-结束"`
-	CostCnyStart    int    `json:"cost_cny_start" dc:"价格区间-开始"`
-	CostCnyEnd      int    `json:"cost_cny_end" dc:"价格区间-结束"`
+	VendorName      string `json:"vendorName" dc:"供应商名称"`
+	Brand           string `json:"brand" dc:"品牌名称"`
+	OrderBy         int    `json:"orderBy" dc:"排序"`
+	OrderByPriceAsc int    `json:"orderByPriceAsc" dc:"价格升序"`
+	CostStart       int    `json:"costStart" dc:"价格区间-开始"`
+	CostEnd         int    `json:"costEnd" dc:"价格区间-结束"`
+	CostCnyStart    int    `json:"costCnyStart" dc:"价格区间-开始"`
+	CostCnyEnd      int    `json:"costCnyEnd" dc:"价格区间-结束"`
 }
 
 type PageApiModel struct {

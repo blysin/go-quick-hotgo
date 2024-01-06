@@ -149,6 +149,10 @@ func (s *SVenIndex) Page(ctx context.Context, req venin.VenPageApiInp) (res *ven
 		InnerJoin("hg_fm_vendor_index b", "b.ven_detail_id = a.id").
 		Where("b.status = ?", IndexStatusOk)
 
+	if req.Brand != "" {
+		mod = mod.Where("a.brand like ?", "%"+req.Brand+"%")
+	}
+
 	if req.VendorName != "" {
 		mod = mod.Where("a.vendor like ?", "%"+req.VendorName+"%")
 	}
@@ -187,6 +191,7 @@ func (s *SVenIndex) Page(ctx context.Context, req venin.VenPageApiInp) (res *ven
 		PageRes: form.PageRes{
 			PageReq:    req.PageReq,
 			TotalCount: total,
+			PageCount:  form.CalPageCount(total, req.GetPerPage()),
 		},
 		List: list,
 	}

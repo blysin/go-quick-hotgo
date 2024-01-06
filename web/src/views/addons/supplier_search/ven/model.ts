@@ -1,8 +1,7 @@
-import {ref} from 'vue';
-import {cloneDeep} from 'lodash-es';
-import {FormSchema} from '@/components/Form';
-import {defRangeShortcuts} from '@/utils/dateUtil';
-
+import { ref } from 'vue';
+import { cloneDeep } from 'lodash-es';
+import { FormSchema } from '@/components/Form';
+import { defRangeShortcuts } from '@/utils/dateUtil';
 
 export interface State {
   id: number;
@@ -35,7 +34,6 @@ export function newState(state: State | null): State {
   return cloneDeep(defaultState);
 }
 
-
 export const rules = {
   vendorName: {
     required: true,
@@ -50,74 +48,73 @@ export const rules = {
     message: '请选择',
   },
 
-  "presetColumn.brandName": {
+  'presetColumn.brandName': {
     required: true,
     trigger: ['blur', 'input'],
     type: 'string',
     message: '请选择',
   },
-  "presetColumn.barCode": {
+  'presetColumn.barCode': {
     required: true,
     trigger: ['blur', 'input'],
     type: 'string',
     message: '请选择',
   },
-  "presetColumn.enName": {
+  'presetColumn.enName': {
     required: true,
     trigger: ['blur', 'input'],
     type: 'string',
     message: '请选择',
   },
-  "presetColumn.supplyPrice": {
+  'presetColumn.supplyPrice': {
     required: true,
     trigger: ['blur', 'input'],
     type: 'string',
     message: '请选择',
   },
-  "presetColumn.salePrice": {
+  'presetColumn.salePrice': {
     required: true,
     trigger: ['blur', 'input'],
     type: 'string',
     message: '请选择',
   },
-  "presetColumn.vendorName": {
+  'presetColumn.vendorName': {
     required: true,
     trigger: ['blur', 'input'],
     type: 'string',
     message: '请选择',
   },
-
 };
 
 export const Status = {
   normal: {
     value: 0,
-    label: "未发布"
+    label: '未发布',
   },
   delete: {
     value: -1,
-    label: "已删除"
+    label: '已删除',
   },
   published: {
     value: 2,
-    label: "已发布"
+    label: '已发布',
   },
-}
+};
 
 export const StatusList = [
   {
     value: 0,
-    label: "未发布"
+    label: '未发布',
   },
   {
     value: -1,
-    label: "已删除"
+    label: '已删除',
   },
   {
     value: 2,
-    label: "已发布"
+    label: '已发布',
   },
-]
+];
 
 export const schemas = ref<FormSchema[]>([
   {
@@ -215,9 +212,7 @@ export interface SaveParam {
   presetColumn: PresetColumn;
 }
 
-
 export interface Currency {
   name: string;
   desc: string;
 }
-
