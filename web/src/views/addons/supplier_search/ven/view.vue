@@ -1,7 +1,7 @@
 <template>
   <div>
     <n-card :bordered="false" :segmented="{ content: true }" class="proCard mt-4" size="small">
-      <n-descriptions class="py-2" column="3" label-placement="left">
+      <n-descriptions class="py-2" :column="3" label-placement="left">
         <n-descriptions-item>
           <template #label>供应商名称</template>
           {{ formValue.vendorName }}
@@ -227,7 +227,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, ref, watch } from 'vue';
+  import { computed, onMounted, ref, watch } from 'vue';
   import { FormInst, useMessage } from 'naive-ui';
   import {
     ChangeStatus,
@@ -397,15 +397,28 @@
     return tag;
   });
 
+  async function initData() {
+    formValue.value = await GetVendor({ id: props.id });
+
+    // StatusList 去掉value = -1 的项
+    statusList.value = StatusList.filter((item) => item.value !== -1);
+    fetchData();
+  }
+
+  onMounted(async () => {
+    if (props.show && (!props.id || props.id < 1)) {
+      message.error('自增ID不正确，请检查！');
+      return;
+    }
+    await initData();
+  });
+
   watch(
     () => props.show,
     async (newValue) => {
+      console.log('view page is show ', newValue);
       if (newValue && props.id > 0) {
-        formValue.value = await GetVendor({ id: props.id });
-
-        // StatusList 去掉value = -1 的项
-        statusList.value = StatusList.filter((item) => item.value !== -1);
-        fetchData();
+        await initData();
       }
     }
   );

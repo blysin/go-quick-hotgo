@@ -12,6 +12,7 @@ require (
 	github.com/antlabs/strsim v0.0.3
 	github.com/apache/rocketmq-client-go/v2 v2.1.2
 	github.com/casbin/casbin/v2 v2.55.0
+	github.com/emirpasic/gods v1.18.1
 	github.com/forgoer/openssl v1.4.0
 	github.com/go-pay/gopay v1.5.98
 	github.com/gogf/gf/contrib/drivers/mysql/v2 v2.5.7
@@ -60,7 +61,6 @@ require (
 	github.com/eapache/go-resiliency v1.2.0 // indirect
 	github.com/eapache/go-xerial-snappy v0.0.0-20180814174437-776d5712da21 // indirect
 	github.com/eapache/queue v1.1.0 // indirect
-	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/fatih/color v1.16.0 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
